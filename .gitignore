@@ -55,3 +55,4 @@ local.properties
 # ...except for the debug signing configuration
 !/team-props/debugSigningConfig.properties
 !/team-props/signing/debug.keystore
+/credentials.json
