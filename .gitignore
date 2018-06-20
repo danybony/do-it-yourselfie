@@ -39,6 +39,8 @@ local.properties
 !/.idea/copyright/
 !/.idea/compiler.xml
 
+/.idea/codeStyles/Project.xml
+
 # OSX
 *.DS_Store
 
@@ -56,3 +58,4 @@ local.properties
 !/team-props/debugSigningConfig.properties
 !/team-props/signing/debug.keystore
 /credentials.json
+/google-services.json
