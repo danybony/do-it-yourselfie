@@ -1,6 +1,7 @@
 package net.bonysoft.doityourselfie
 
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -10,26 +11,35 @@ import net.bonysoft.doityourselfie.authentication.GoogleAuthenticatior
 
 class MainActivity : AppCompatActivity(), AuthenticationListener{
 
-    private lateinit var authenticatior: GoogleAuthenticatior<MainActivity>
+    private lateinit var authenticator: GoogleAuthenticatior<MainActivity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        authenticatior = GoogleAuthenticatior.attachTo(this)
+        setContentView(R.layout.activity_main)
+        authenticator = GoogleAuthenticatior.attachTo(this)
     }
 
-    override fun showLoggedUi(token: String) {
+    override fun showLoggedUi(token: String?) {
         btnLogout.visibility = View.VISIBLE
         btnLogin.visibility = View.GONE
         btnLogout.setOnClickListener {
-            authenticatior.logout()
+            authenticator.logout()
         }
     }
 
     override fun showLoggedOutUi() {
         btnLogout.visibility = View.GONE
         btnLogin.visibility = View.VISIBLE
-        btnLogout.setOnClickListener {
-            authenticatior.authenticate()
+        btnLogin.setOnClickListener {
+            authenticator.authenticate()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (authenticator.shouldParseResult(requestCode)) {
+            authenticator.parseResult(resultCode)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 }

@@ -36,13 +36,13 @@ class GoogleAuthenticatior<T> private constructor(private val host: T) : Lifecyc
     }
 
     private fun dispatchToken() =
-            host.showLoggedUi(
-                    auth.currentUser?.getIdToken(false)?.getResult()?.getToken().toString()
-            )
+            auth.currentUser?.getIdToken(false)?.addOnCompleteListener{
+                host.showLoggedUi(it.result.token)
+            }
 
     fun shouldParseResult(requestCode: Int) = requestCode == AUTHENTICATION_CODE
 
-    fun parseResult(resultCode: Int, intent: Intent) {
+    fun parseResult(resultCode: Int) {
         if (resultCode == RESULT_OK) {
             dispatchToken()
         }
