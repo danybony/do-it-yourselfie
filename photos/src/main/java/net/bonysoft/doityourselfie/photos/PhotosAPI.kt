@@ -1,5 +1,7 @@
 package net.bonysoft.doityourselfie.photos
 
-object PhotosAPI {
+import android.app.Application
+
+class PhotosAPI(private val application: Application) {
 
 }
