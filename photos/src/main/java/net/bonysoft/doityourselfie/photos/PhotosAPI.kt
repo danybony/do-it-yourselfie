@@ -7,6 +7,6 @@ class PhotosAPI(application: Application,
                 oAuth2Token: String,
                 isDebug: Boolean = false) {
 
-    private val component = createLibraryComponent(application, oAuth2Token, isDebug)
+    private val apiService = createLibraryComponent(application, oAuth2Token, isDebug).apiService()
 
 }

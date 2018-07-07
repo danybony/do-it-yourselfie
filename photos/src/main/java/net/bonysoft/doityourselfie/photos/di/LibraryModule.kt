@@ -6,6 +6,7 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import net.bonysoft.doityourselfie.photos.BuildConfig
+import net.bonysoft.doityourselfie.photos.network.ApiService
 import net.bonysoft.doityourselfie.photos.network.AuthenticationInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -54,4 +55,7 @@ internal class LibraryModule(val application: Application,
                     .client(client)
                     .build()
 
+    @Provides
+    fun provideApiService(retrofit: Retrofit) : ApiService =
+            retrofit.create(ApiService::class.java)
 }
