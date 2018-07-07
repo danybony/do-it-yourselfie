@@ -10,7 +10,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
-internal class LibraryModule(val application: Application) {
+internal class LibraryModule(val application: Application,
+                             val oAuth2Token: String) {
 
     @Provides
     fun provideMoshi(): Moshi =
