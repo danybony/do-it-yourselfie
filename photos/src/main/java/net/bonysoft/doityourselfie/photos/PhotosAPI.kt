@@ -1,7 +1,12 @@
 package net.bonysoft.doityourselfie.photos
 
 import android.app.Application
+import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
 
-class PhotosAPI(private val application: Application) {
+class PhotosAPI(application: Application,
+                oAuth2Token: String,
+                isDebug: Boolean = false) {
+
+    private val component = createLibraryComponent(application, oAuth2Token, isDebug)
 
 }
