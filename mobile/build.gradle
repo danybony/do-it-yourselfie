@@ -42,6 +42,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2', withoutV4
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(":secrets")
+    implementation project(":photos")
 }
 
 apply plugin: 'com.google.gms.google-services'
