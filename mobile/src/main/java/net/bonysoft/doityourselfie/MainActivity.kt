@@ -7,16 +7,16 @@ import android.os.Bundle
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
-import net.bonysoft.doityourselfie.authentication.GoogleAuthenticatior
+import net.bonysoft.doityourselfie.authentication.GoogleAuthenticator
 
 class MainActivity : AppCompatActivity(), AuthenticationListener{
 
-    private lateinit var authenticator: GoogleAuthenticatior<MainActivity>
+    private lateinit var authenticator: GoogleAuthenticator<MainActivity>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        authenticator = GoogleAuthenticatior.attachTo(this)
+        authenticator = GoogleAuthenticator.attachTo(this)
     }
 
     override fun showLoggedUi(token: String?) {
