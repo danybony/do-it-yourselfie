@@ -9,7 +9,7 @@ import retrofit2.http.POST
 
 internal interface ApiService {
 
-    @Headers("token: 1")
+    @Headers("token: 1", "json: 1")
     @POST("albums")
-    fun createAlbum(@Body albumRequest: AlbumRequest) : Deferred<AlbumResponse>
+    fun createAlbum(@Body albumRequest: AlbumRequest): Deferred<AlbumResponse>
 }

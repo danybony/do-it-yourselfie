@@ -8,6 +8,7 @@ import dagger.Provides
 import net.bonysoft.doityourselfie.photos.BuildConfig
 import net.bonysoft.doityourselfie.photos.network.ApiService
 import net.bonysoft.doityourselfie.photos.network.AuthenticationInterceptor
+import net.bonysoft.doityourselfie.photos.network.TypeIncerceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -39,11 +40,17 @@ internal class LibraryModule(val application: Application,
             AuthenticationInterceptor(oAuth2Token)
 
     @Provides
+    fun provideTypeInterceptor(): TypeIncerceptor =
+            TypeIncerceptor()
+
+    @Provides
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor,
-                            authenticationInterceptor: AuthenticationInterceptor): OkHttpClient =
+                            authenticationInterceptor: AuthenticationInterceptor,
+                            typeInterceptor: TypeIncerceptor): OkHttpClient =
             OkHttpClient.Builder()
                     .addInterceptor(loggingInterceptor)
                     .addInterceptor(authenticationInterceptor)
+                    .addInterceptor(typeInterceptor)
                     .build()
 
     @Provides
@@ -56,6 +63,6 @@ internal class LibraryModule(val application: Application,
                     .build()
 
     @Provides
-    fun provideApiService(retrofit: Retrofit) : ApiService =
+    fun provideApiService(retrofit: Retrofit): ApiService =
             retrofit.create(ApiService::class.java)
 }

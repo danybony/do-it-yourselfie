@@ -6,7 +6,7 @@ import okhttp3.Response
 internal class AuthenticationInterceptor(private val oAuth2Token: String) : Interceptor {
 
     companion object {
-        const val TOKEN = "Authorization"
+        private const val TOKEN = "Authorization"
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
