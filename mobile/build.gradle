@@ -21,6 +21,13 @@ android {
     }
 }
 
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
+
 dependencies {
     def lifecycle_version = "1.1.1"
     def withoutV4 = { exclude group: 'com.android.support', module: 'support-v4' }
@@ -37,6 +44,8 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:$lifecycle_version"
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
     kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2', withoutV4

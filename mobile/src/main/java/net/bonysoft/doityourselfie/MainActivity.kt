@@ -8,10 +8,12 @@ import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
 import net.bonysoft.doityourselfie.authentication.GoogleAuthenticator
+import net.bonysoft.doityourselfie.photos.PhotosAPI
 
 class MainActivity : AppCompatActivity(), AuthenticationListener{
 
     private lateinit var authenticator: GoogleAuthenticator<MainActivity>
+    private lateinit var photosAPI: PhotosAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,16 +22,26 @@ class MainActivity : AppCompatActivity(), AuthenticationListener{
     }
 
     override fun showLoggedUi(token: String?) {
-        btnLogout.visibility = View.VISIBLE
-        btnLogin.visibility = View.GONE
+        loggedInUi.visibility = View.VISIBLE
+        loggedOutUi.visibility = View.GONE
         btnLogout.setOnClickListener {
             authenticator.logout()
         }
+
+        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
+
+        btnCreateAlbum.setOnClickListener {
+            createAlbum(albumName.text.toString())
+        }
+    }
+
+    private fun createAlbum(albumName: String) {
+
     }
 
     override fun showLoggedOutUi() {
-        btnLogout.visibility = View.GONE
-        btnLogin.visibility = View.VISIBLE
+        loggedInUi.visibility = View.GONE
+        loggedOutUi.visibility = View.VISIBLE
         btnLogin.setOnClickListener {
             authenticator.authenticate()
         }
