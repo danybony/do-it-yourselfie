@@ -12,18 +12,22 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
 import net.bonysoft.doityourselfie.authentication.GoogleAuthenticator
+import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import kotlin.coroutines.experimental.CoroutineContext
 
 class MainActivity : AppCompatActivity(), AuthenticationListener {
 
-    private lateinit var authenticator: GoogleAuthenticator<MainActivity>
+//    private lateinit var authenticator: GoogleAuthenticator<MainActivity>
+    private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
     private lateinit var photosAPI: PhotosAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        authenticator = GoogleAuthenticator.attachTo(this)
+        authenticator = GoogleSignInAuthenticator.attachTo(this)
+
+        showLoggedOutUi()
     }
 
     override fun showLoggedUi(token: String?) {
@@ -47,7 +51,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
             try {
                 val response = photosAPI.createAlbum(albumName).await()
                 waitingUi.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "SUCCESS: ${response.toString()}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, "SUCCESS: $response", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
                 waitingUi.visibility = View.GONE
                 Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
@@ -65,7 +69,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (authenticator.shouldParseResult(requestCode)) {
-            authenticator.parseResult(resultCode)
+            authenticator.parseResult(data!!)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
