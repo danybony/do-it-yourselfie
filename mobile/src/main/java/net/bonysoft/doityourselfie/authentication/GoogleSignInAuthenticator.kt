@@ -1,16 +1,25 @@
 package net.bonysoft.doityourselfie.authentication
 
+import android.accounts.Account
 import android.app.Activity
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Intent
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.R
 
 
@@ -26,6 +35,8 @@ class GoogleSignInAuthenticator<T> private constructor(private val host: T) : Li
         private const val AUTHENTICATION_CODE = 1234
         private const val PHOTOS_READ_APPEND_SCOPE = "https://www.googleapis.com/auth/photoslibrary"
         private const val PHOTOS_SHARING_SCOPE = "https://www.googleapis.com/auth/photoslibrary.sharing"
+
+        private val scopes = arrayListOf(PHOTOS_READ_APPEND_SCOPE, PHOTOS_SHARING_SCOPE)
     }
 
     private val oAuthSecret = host.getString(R.string.google_id_client_oauth)
@@ -50,8 +61,22 @@ class GoogleSignInAuthenticator<T> private constructor(private val host: T) : Li
     }
 
     private fun dispatchToken(account: GoogleSignInAccount) {
-//        host.showLoggedUi(account.serverAuthCode)
-        host.showLoggedUi(account.idToken)
+        try {
+            val credential = GoogleAccountCredential.usingOAuth2(host, scopes).apply {
+                selectedAccount = account.account
+            }
+
+            launch(UI) {
+                val token = async {
+                    credential.token
+                }
+                host.showLoggedUi(token.await())
+            }
+
+        } catch (e: UserRecoverableAuthIOException) {
+            Log.d("E", e.message)
+        }
+
     }
 
     fun shouldParseResult(requestCode: Int) = requestCode == AUTHENTICATION_CODE
