@@ -46,6 +46,7 @@ dependencies {
     kapt "android.arch.lifecycle:compiler:$lifecycle_version"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2', withoutV4

@@ -8,10 +8,12 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
 import net.bonysoft.doityourselfie.authentication.GoogleAuthenticator
 import net.bonysoft.doityourselfie.photos.PhotosAPI
+import kotlin.coroutines.experimental.CoroutineContext
 
 class MainActivity : AppCompatActivity(), AuthenticationListener {
 
@@ -40,17 +42,16 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
     }
 
     private fun createAlbum(albumName: String) {
-        launch {
-//            waitingUi.visibility = View.VISIBLE
+        launch(UI) {
+            waitingUi.visibility = View.VISIBLE
             try {
                 val response = photosAPI.createAlbum(albumName).await()
-                Log.d("TEST", response.toString())
-            } catch(e: Exception) {
-                Log.d("TEST", e.message)
+                waitingUi.visibility = View.GONE
+                Toast.makeText(this@MainActivity, "SUCCESS: ${response.toString()}", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                waitingUi.visibility = View.GONE
+                Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             }
-//            waitingUi.visibility = View.GONE
-//            Toast.makeText(this@MainActivity, response.toString(), Toast.LENGTH_LONG).show()
-
         }
     }
 
