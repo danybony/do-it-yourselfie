@@ -4,12 +4,14 @@ import kotlinx.coroutines.experimental.Deferred
 import net.bonysoft.doityourselfie.photos.model.AlbumRequest
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
 internal interface ApiService {
 
-    @Headers("token: 1", "json: 1")
+//    @Headers("token: 1")
     @POST("albums")
-    fun createAlbum(@Body albumRequest: AlbumRequest): Deferred<AlbumResponse>
+    fun createAlbum(@Header("Authorization") token: String,
+                    @Body albumRequest: AlbumRequest): Deferred<AlbumResponse>
 }

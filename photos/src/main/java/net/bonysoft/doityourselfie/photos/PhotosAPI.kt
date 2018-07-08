@@ -8,8 +8,10 @@ class PhotosAPI(application: Application,
                 oAuth2Token: String,
                 isDebug: Boolean = false) {
 
-    private val apiService = createLibraryComponent(application, oAuth2Token, isDebug).apiService()
+    private val apiService = createLibraryComponent(isDebug).apiService()
+    private val tokenBearer = "Bearer $oAuth2Token"
 
     fun createAlbum(albumName: String) =
-            apiService.createAlbum(albumName.toAlbumRequest())
+            apiService.createAlbum(tokenBearer, albumName.toAlbumRequest())
+
 }
