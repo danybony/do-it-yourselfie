@@ -4,27 +4,35 @@ package net.bonysoft.doityourselfie
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
-import net.bonysoft.doityourselfie.authentication.GoogleAuthenticator
 import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
 import net.bonysoft.doityourselfie.photos.PhotosAPI
-import kotlin.coroutines.experimental.CoroutineContext
+import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.ui.AlbumAdapter
+import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
-class MainActivity : AppCompatActivity(), AuthenticationListener {
+class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedListener {
 
     private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
     private lateinit var photosAPI: PhotosAPI
+
+    private val adapter = AlbumAdapter(this, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         authenticator = GoogleSignInAuthenticator.attachTo(this)
+
+        albumList.let {
+            it.adapter = adapter
+            it.layoutManager = LinearLayoutManager(this)
+        }
 
         showLoggedOutUi()
     }
@@ -51,6 +59,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
     private fun createAlbum(albumName: String) {
         launch(UI) {
             waitingUi.visibility = View.VISIBLE
+            listUi.visibility = View.GONE
             try {
                 val response = photosAPI.createAlbum(albumName).await()
                 Toast.makeText(this@MainActivity, "SUCCESS: $response", Toast.LENGTH_LONG).show()
@@ -67,11 +76,12 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
             waitingUi.visibility = View.VISIBLE
             try {
                 val list = photosAPI.fetchAlbums().await()
-                Toast.makeText(this@MainActivity, "SUCCESS: Number of albums is ${list.size}", Toast.LENGTH_LONG).show()
+                adapter.addAlbums(list)
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
                 waitingUi.visibility = View.GONE
+                listUi.visibility = View.VISIBLE
             }
         }
     }
@@ -90,5 +100,9 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onAlbumSelected(completeAlbum: CompleteAlbum) {
+        //share album
     }
 }

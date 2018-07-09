@@ -78,8 +78,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        tools:visibility="visible"
-        app:constraint_referenced_ids="btnLogout,albumName,btnCreateAlbum,btnListAlbums" />
+        app:constraint_referenced_ids="btnLogout,albumName,btnCreateAlbum,btnListAlbums"
+        tools:visibility="visible" />
 
     <ProgressBar
         android:id="@+id/loadingProgressBar"
@@ -102,5 +102,24 @@
         android:layout_height="0dp"
         android:visibility="gone"
         app:constraint_referenced_ids="loadingProgressBar" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/albumList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnListAlbums" />
+
+    <android.support.constraint.Group
+        android:id="@+id/listUi"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="albumList" />
 
 </android.support.constraint.ConstraintLayout>
