@@ -1,15 +1,11 @@
 package net.bonysoft.doityourselfie.authentication
 
-import android.accounts.Account
-import android.app.Activity
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Intent
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +17,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.R
+import timber.log.Timber
 
 
 class GoogleSignInAuthenticator<T> private constructor(private val host: T) : LifecycleObserver
@@ -44,7 +41,6 @@ class GoogleSignInAuthenticator<T> private constructor(private val host: T) : Li
     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(Scope(PHOTOS_SHARING_SCOPE), Scope(PHOTOS_READ_APPEND_SCOPE))
-//            .requestServerAuthCode(oAuthSecret)
             .requestIdToken(oAuthSecret)
             .build()
 
@@ -74,7 +70,7 @@ class GoogleSignInAuthenticator<T> private constructor(private val host: T) : Li
             }
 
         } catch (e: UserRecoverableAuthIOException) {
-            Log.d("E", e.message)
+            Timber.e(e) //This should happen only in specific cases
         }
 
     }
