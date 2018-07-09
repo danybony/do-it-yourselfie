@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
             it.layoutManager = LinearLayoutManager(this)
         }
 
+        albumView.setListener(this)
+
         showLoggedOutUi()
     }
 
@@ -60,13 +62,15 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
         launch(UI) {
             waitingUi.visibility = View.VISIBLE
             listUi.visibility = View.GONE
+            singleAlbumUi.visibility = View.GONE
             try {
                 val response = photosAPI.createAlbum(albumName).await()
-                Toast.makeText(this@MainActivity, "SUCCESS: $response", Toast.LENGTH_LONG).show()
+                albumView.bindTo(response)
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
                 waitingUi.visibility = View.GONE
+                singleAlbumUi.visibility = View.VISIBLE
             }
         }
     }
@@ -74,6 +78,8 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     private fun fetchAlbums() {
         launch(UI) {
             waitingUi.visibility = View.VISIBLE
+            listUi.visibility = View.GONE
+            singleAlbumUi.visibility = View.GONE
             try {
                 val list = photosAPI.fetchAlbums().await()
                 adapter.addAlbums(list)
@@ -89,6 +95,8 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     override fun showLoggedOutUi() {
         loggedInUi.visibility = View.GONE
         loggedOutUi.visibility = View.VISIBLE
+        listUi.visibility = View.GONE
+        singleAlbumUi.visibility = View.GONE
         btnLogin.setOnClickListener {
             authenticator.authenticate()
         }

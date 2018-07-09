@@ -3,11 +3,8 @@ package net.bonysoft.doityourselfie.ui
 import android.content.Context
 import android.support.v7.widget.CardView
 import android.util.AttributeSet
-import net.bonysoft.doityourselfie.EMTPY_ALBUM_RESPONSE
-import net.bonysoft.doityourselfie.R
-import net.bonysoft.doityourselfie.lazyTextView
+import net.bonysoft.doityourselfie.*
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
-import net.bonysoft.doityourselfie.toCompleteAlbum
 import kotlin.properties.Delegates
 
 class AlbumView @JvmOverloads constructor(
@@ -17,6 +14,7 @@ class AlbumView @JvmOverloads constructor(
     private val titleView by lazyTextView(R.id.albumTitle)
     private val productUrlView by lazyTextView(R.id.productUrl)
     private val writeableView by lazyTextView(R.id.isWriteable)
+    private val contentView by lazyView(R.id.rootView)
 
     private var album: AlbumResponse by Delegates.observable(EMTPY_ALBUM_RESPONSE) { _, _, new ->
         titleView.text = new.title
@@ -33,7 +31,7 @@ class AlbumView @JvmOverloads constructor(
     }
 
     fun setListener(listener: AlbumSelectedListener) {
-        setOnClickListener {
+        contentView.setOnClickListener {
             listener.onAlbumSelected(album.toCompleteAlbum())
         }
     }

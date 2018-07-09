@@ -24,13 +24,15 @@ fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NO
 
 fun View.lazyTextView(@IdRes id: Int): Lazy<TextView> = unsafeLazy { findViewById<TextView>(id) }
 
+fun View.lazyView(@IdRes id: Int): Lazy<View> = unsafeLazy { findViewById<View>(id) }
+
 fun AlbumResponse.toCompleteAlbum() =
         CompleteAlbum(
                 id = this.id,
                 title = this.title,
                 productUrl = this.productUrl,
                 coverPhotoBaseUrl = "",
-                isWriteable = this.writeable,
+                isWriteable = this.writeable ?: "",
                 totalMediaItems = 0
         )
 
