@@ -45,6 +45,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:singleLine="true"
+        android:ellipsize="start"
         app:layout_constraintBottom_toBottomOf="@+id/ic_url"
         app:layout_constraintEnd_toEndOf="@+id/albumTitle"
         app:layout_constraintStart_toEndOf="@+id/ic_url"

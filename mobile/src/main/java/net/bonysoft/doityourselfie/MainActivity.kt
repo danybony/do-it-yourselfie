@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
     private lateinit var photosAPI: PhotosAPI
 
-    private val adapter = AlbumAdapter(this, this)
+    private val adapter by lazy { AlbumAdapter(this, this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -2,10 +2,9 @@ package net.bonysoft.doityourselfie.ui
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import net.bonysoft.doityourselfie.R
-import net.bonysoft.doityourselfie.imageView
+import com.squareup.picasso.Picasso
+import net.bonysoft.doityourselfie.*
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
-import net.bonysoft.doityourselfie.textView
 
 class AlbumViewHolder(itemView: View,
                       private val listener: AlbumSelectedListener) : RecyclerView.ViewHolder(itemView) {
@@ -20,7 +19,17 @@ class AlbumViewHolder(itemView: View,
             listener.onAlbumSelected(album)
         }
 
-        //TODO bind cover
+        if (album.coverPhotoBaseUrl.isNotEmpty()) {
+            val size = 98.toPixel(itemView.resources)
+            Picasso.get()
+                    .load(album.fetchImageOfSize(size))
+                    .resize(size, size)
+                    .centerInside()
+                    .placeholder(R.drawable.ic_photo_placeholder)
+                    .into(coverView)
+        } else {
+            coverView.setImageResource(R.drawable.ic_photo_placeholder)
+        }
 
         titleView.text = album.title
         urlView.text = album.productUrl
