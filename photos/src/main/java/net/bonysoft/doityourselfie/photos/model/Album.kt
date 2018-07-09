@@ -16,3 +16,18 @@ data class AlbumResponse(
         @Json(name = "isWriteable")
         val writeable: String
 )
+
+data class CompleteAlbum(
+        val id: String,
+        val title: String,
+        val productUrl: String,
+        val coverPhotoBaseUrl: String,
+        val isWriteable: String,
+        val totalMediaItems: Int
+)
+
+@Suppress("ArrayInDataClass")
+data class AlbumListResponse(
+        val albums: Array<CompleteAlbum>,
+        val nextPageToken: String?
+)

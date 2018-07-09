@@ -1,7 +1,10 @@
 package net.bonysoft.doityourselfie.photos
 
 import android.app.Application
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
+import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.utils.toAlbumRequest
 
 class PhotosAPI(application: Application,
@@ -13,5 +16,19 @@ class PhotosAPI(application: Application,
 
     fun createAlbum(albumName: String) =
             apiService.createAlbum(tokenBearer, albumName.toAlbumRequest())
+
+    fun fetchAlbums(): Deferred<ArrayList<CompleteAlbum>> {
+        return async {
+            val albums = arrayListOf<CompleteAlbum>()
+            var nextPageToken: String? = null
+
+            do {
+                val page = apiService.fetchAlbums(tokenBearer, nextPageToken).await()
+                nextPageToken = page.nextPageToken
+                albums.addAll(page.albums)
+            } while (nextPageToken != null)
+            return@async albums
+        }
+    }
 
 }

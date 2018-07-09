@@ -18,7 +18,6 @@ import kotlin.coroutines.experimental.CoroutineContext
 
 class MainActivity : AppCompatActivity(), AuthenticationListener {
 
-//    private lateinit var authenticator: GoogleAuthenticator<MainActivity>
     private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
     private lateinit var photosAPI: PhotosAPI
 
@@ -43,6 +42,10 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         btnCreateAlbum.setOnClickListener {
             createAlbum(albumName.text.toString())
         }
+
+        btnListAlbums.setOnClickListener {
+            fetchAlbums()
+        }
     }
 
     private fun createAlbum(albumName: String) {
@@ -50,11 +53,25 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
             waitingUi.visibility = View.VISIBLE
             try {
                 val response = photosAPI.createAlbum(albumName).await()
-                waitingUi.visibility = View.GONE
                 Toast.makeText(this@MainActivity, "SUCCESS: $response", Toast.LENGTH_LONG).show()
             } catch (e: Exception) {
-                waitingUi.visibility = View.GONE
                 Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                waitingUi.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun fetchAlbums() {
+        launch(UI) {
+            waitingUi.visibility = View.VISIBLE
+            try {
+                val list = photosAPI.fetchAlbums().await()
+                Toast.makeText(this@MainActivity, "SUCCESS: Number of albums is ${list.size}", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(this@MainActivity, "ERROR: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                waitingUi.visibility = View.GONE
             }
         }
     }

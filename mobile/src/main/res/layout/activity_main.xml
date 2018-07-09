@@ -63,12 +63,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/albumName" />
 
+    <Button
+        android:id="@+id/btnListAlbums"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="List Albums"
+        app:layout_constraintEnd_toStartOf="@+id/btnCreateAlbum"
+        app:layout_constraintTop_toBottomOf="@+id/albumName" />
+
     <android.support.constraint.Group
         android:id="@+id/loggedInUi"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:constraint_referenced_ids="btnLogout,albumName,btnCreateAlbum" />
+        tools:visibility="visible"
+        app:constraint_referenced_ids="btnLogout,albumName,btnCreateAlbum,btnListAlbums" />
 
     <ProgressBar
         android:id="@+id/loadingProgressBar"
