@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.CAMERA_SERVICE
 import android.graphics.ImageFormat
-import android.graphics.ImageFormat.JPEG
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -129,7 +128,7 @@ private constructor() {
     private fun getHighestSize(manager: CameraManager, id: String): Size {
         val characteristics = manager.getCameraCharacteristics(id)
         val configs = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
-        val highestSize = configs.getOutputSizes(JPEG).maxBy { it.width * it.height }!!
+        val highestSize = configs.getOutputSizes(ImageFormat.JPEG).maxBy { it.width * it.height }!!
         Timber.d("Using output resolution: $highestSize")
         return highestSize
     }
