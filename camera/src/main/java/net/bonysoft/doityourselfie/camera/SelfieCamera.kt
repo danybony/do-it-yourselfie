@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.CAMERA_SERVICE
 import android.graphics.ImageFormat
+import android.graphics.ImageFormat.JPEG
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CameraCharacteristics
@@ -14,11 +15,10 @@ import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
 import android.media.ImageReader
 import android.os.Handler
+import android.util.Size
 import android.view.Surface
 import timber.log.Timber
 
-private const val IMAGE_WIDTH = 3280
-private const val IMAGE_HEIGHT = 2464
 private const val MAX_IMAGES = 1
 
 class SelfieCamera
@@ -111,9 +111,10 @@ private constructor() {
         val id = camIds[0]
         Timber.d("Using camera id $id")
 
+        val outputSize = getHighestSize(manager, id)
 
         // Initialize the image processor
-        imageReader = ImageReader.newInstance(IMAGE_WIDTH, IMAGE_HEIGHT, ImageFormat.JPEG, MAX_IMAGES)
+        imageReader = ImageReader.newInstance(outputSize.width, outputSize.height, ImageFormat.JPEG, MAX_IMAGES)
         imageReader!!.setOnImageAvailableListener(imageAvailableListener, backgroundHandler)
 
         // Open the camera resource
@@ -123,6 +124,14 @@ private constructor() {
             Timber.d(cae, "Camera access exception")
         }
 
+    }
+
+    private fun getHighestSize(manager: CameraManager, id: String): Size {
+        val characteristics = manager.getCameraCharacteristics(id)
+        val configs = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        val highestSize = configs.getOutputSizes(JPEG).maxBy { it.width * it.height }!!
+        Timber.d("Using output resolution: $highestSize")
+        return highestSize
     }
 
     fun takePicture() {
