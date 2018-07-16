@@ -7,6 +7,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.HandlerThread
 import net.bonysoft.doityourselfie.camera.SelfieCamera
+import net.bonysoft.doityourselfie.camera.dumpFormatInfo
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -24,7 +25,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (BuildConfig.DEBUG) SelfieCamera.dumpFormatInfo(this)
+        if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
         cameraThread = HandlerThread("CameraBackgroundThread")
         cameraThread.start()
