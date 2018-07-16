@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="net.bonysoft.doityourselfie">
 
-  <application android:allowBackup="false">
+  <application android:allowBackup="false"
+    android:name=".DiyApp">
     <uses-library android:name="com.google.android.things" />
 
     <activity android:name=".MainActivity">
