@@ -26,6 +26,8 @@ private constructor() {
     private var cameraDevice: CameraDevice? = null
     private var captureSession: CameraCaptureSession? = null
     private var imageReader: ImageReader? = null
+    private var cameraCharacteristics: CameraCharacteristics? = null
+
 
     private val stateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(cameraDevice: CameraDevice) {
@@ -39,7 +41,7 @@ private constructor() {
         }
 
         override fun onError(cameraDevice: CameraDevice, i: Int) {
-            Timber.d("Camera device error, closing.")
+            Timber.d("Camera device error, closing. Cause: $i")
             cameraDevice.close()
         }
 
@@ -50,7 +52,7 @@ private constructor() {
     }
 
 
-    private val mSessionCallback = object : CameraCaptureSession.StateCallback() {
+    private val sessionCallback = object : CameraCaptureSession.StateCallback() {
         override fun onConfigured(cameraCaptureSession: CameraCaptureSession) {
             // The camera is already closed
             if (cameraDevice == null) {
@@ -67,7 +69,7 @@ private constructor() {
         }
     }
 
-    private val mCaptureCallback = object : CameraCaptureSession.CaptureCallback() {
+    private val captureCallback = object : CameraCaptureSession.CaptureCallback() {
 
         override fun onCaptureProgressed(session: CameraCaptureSession,
                                          request: CaptureRequest,
@@ -90,6 +92,7 @@ private constructor() {
         internal val camera = SelfieCamera()
     }
 
+
     @SuppressLint("MissingPermission")
     fun initializeCamera(context: Context,
                          backgroundHandler: Handler,
@@ -110,7 +113,9 @@ private constructor() {
         val id = camIds[0]
         Timber.d("Using camera id $id")
 
-        val outputSize = getHighestSize(manager, id)
+        cameraCharacteristics = manager.getCameraCharacteristics(id)
+
+        val outputSize = getHighestSize(cameraCharacteristics!!)
 
         // Initialize the image processor
         imageReader = ImageReader.newInstance(outputSize.width, outputSize.height, ImageFormat.JPEG, MAX_IMAGES)
@@ -125,8 +130,7 @@ private constructor() {
 
     }
 
-    private fun getHighestSize(manager: CameraManager, id: String): Size {
-        val characteristics = manager.getCameraCharacteristics(id)
+    private fun getHighestSize(characteristics: CameraCharacteristics): Size {
         val configs = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val highestSize = configs.getOutputSizes(ImageFormat.JPEG).maxBy { it.width * it.height }!!
         Timber.d("Using output resolution: $highestSize")
@@ -143,7 +147,7 @@ private constructor() {
         try {
             cameraDevice!!.createCaptureSession(
                 listOf<Surface>(imageReader!!.surface),
-                mSessionCallback, null)
+                sessionCallback, null)
         } catch (cae: CameraAccessException) {
             Timber.e(cae, "access exception while preparing pic")
         }
@@ -154,11 +158,23 @@ private constructor() {
         try {
             val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
             captureBuilder.addTarget(imageReader!!.surface)
-            captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
-            captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
-            captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+
+
+            if (cameraCharacteristics!!.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES).contains(CaptureRequest.CONTROL_AF_MODE_AUTO)) {
+                captureBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO)
+                Timber.d("Enabled CONTROL_AF_MODE_AUTO")
+            }
+            if (cameraCharacteristics!!.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES).contains(CaptureRequest.CONTROL_AE_MODE_ON)) {
+                captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
+                Timber.d("Enabled CONTROL_AE_MODE_ON")
+            }
+            if (cameraCharacteristics!!.get(CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES).contains(CaptureRequest.CONTROL_AWB_MODE_AUTO)) {
+                captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+                Timber.d("Enabled CONTROL_AWB_MODE_AUTO")
+            }
+
             Timber.d("Session initialized.")
-            captureSession!!.capture(captureBuilder.build(), mCaptureCallback, null)
+            captureSession!!.capture(captureBuilder.build(), captureCallback, null)
         } catch (cae: CameraAccessException) {
             Timber.e(cae, "camera capture exception")
         }

@@ -46,8 +46,8 @@ fun dumpFormatInfo(context: Context) {
     }
 }
 
-private fun dumpAvailableCharacteristic(characteristics: CameraCharacteristics, controlAfAvailableModes: CameraCharacteristics.Key<IntArray>, s2: String) {
-    val selectedCharacteristics = characteristics.get(controlAfAvailableModes) ?: return
+private fun dumpAvailableCharacteristic(characteristics: CameraCharacteristics, availableModes: CameraCharacteristics.Key<IntArray>, s2: String) {
+    val selectedCharacteristics = characteristics.get(availableModes) ?: return
     for (characteristic in selectedCharacteristics) {
         Timber.d("$s2$characteristic")
     }
