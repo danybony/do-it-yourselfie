@@ -1,8 +1,10 @@
 package net.bonysoft.doityourselfie.photos
 
 import android.app.Application
+import android.graphics.Bitmap
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.utils.toAlbumRequest
@@ -28,6 +30,12 @@ class PhotosAPI(application: Application,
                 albums.addAll(page.albums)
             } while (nextPageToken != null)
             return@async albums
+        }
+    }
+
+    fun uploadImage(fileName: String, bitmap: Bitmap) {
+        launch {
+            val token = apiService.uploadMedia(tokenBearer, fileName, bitmap).await()
         }
     }
 

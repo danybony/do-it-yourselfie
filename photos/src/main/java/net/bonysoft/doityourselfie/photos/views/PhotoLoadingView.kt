@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 
 interface PhotoLoadingView {
 
-    fun onLoading(bitmap: Bitmap)
+    fun onLoading(fileName: String, bitmap: Bitmap)
 
     fun onComplete()
 

@@ -16,7 +16,7 @@ class AlbumView @JvmOverloads constructor(
     private val writeableView by lazyTextView(R.id.isWriteable)
     private val contentView by lazyView(R.id.rootView)
 
-    private var album: AlbumResponse by Delegates.observable(EMTPY_ALBUM_RESPONSE) { _, _, new ->
+    private var album: AlbumResponse by Delegates.observable(EMPTY_ALBUM_RESPONSE) { _, _, new ->
         titleView.text = new.title
         productUrlView.text = new.productUrl
         writeableView.text = new.writeable

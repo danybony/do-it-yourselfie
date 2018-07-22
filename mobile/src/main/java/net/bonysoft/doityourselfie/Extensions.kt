@@ -7,6 +7,7 @@ import android.util.TypedValue.applyDimension
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.orhanobut.hawk.Hawk
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 
@@ -36,7 +37,7 @@ fun AlbumResponse.toCompleteAlbum() =
                 totalMediaItems = 0
         )
 
-val EMTPY_ALBUM_RESPONSE = AlbumResponse("", "", "", "")
+val EMPTY_ALBUM_RESPONSE = AlbumResponse("", "", "", "")
 
 fun View.show() {
     visibility = View.VISIBLE
@@ -45,3 +46,9 @@ fun View.show() {
 fun View.hide() {
     visibility = View.GONE
 }
+
+fun String.extractName() = this.split("/").last()
+
+const val TOKEN_KEY = "net.bonysoft.doityourselfie.TOKEN"
+
+fun token() = Hawk.get<String>(TOKEN_KEY)

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
         }
 
         photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
+        Hawk.put(TOKEN_KEY, token)
         albumName.setText("Test Album 001")
 
         btnCreateAlbum.setOnClickListener {

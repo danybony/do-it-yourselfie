@@ -1,5 +1,6 @@
 package net.bonysoft.doityourselfie.photos.network
 
+import android.graphics.Bitmap
 import kotlinx.coroutines.experimental.Deferred
 import net.bonysoft.doityourselfie.photos.model.AlbumListResponse
 import net.bonysoft.doityourselfie.photos.model.AlbumRequest
@@ -15,4 +16,9 @@ internal interface ApiService {
     @GET("albums")
     fun fetchAlbums(@Header("Authorization") token: String,
                     @Header("nextPageToken") nextPageToken: String? = null): Deferred<AlbumListResponse>
+
+    @POST("uploads")
+    fun uploadMedia(@Header("Authorization") token: String,
+                    @Header("X-Goog-Upload-File-Name") fileName: String,
+                    @Body bitmap: Bitmap): Deferred<String>
 }

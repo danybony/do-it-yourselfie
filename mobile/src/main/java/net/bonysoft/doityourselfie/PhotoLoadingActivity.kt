@@ -8,12 +8,14 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.design.widget.Snackbar.*
+import android.support.design.widget.Snackbar.LENGTH_SHORT
+import android.support.design.widget.Snackbar.make
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AppCompatActivity
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_photo_loading.*
+import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.views.PhotoLoadingView
 
@@ -24,16 +26,21 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         private const val STORAGE_REQUEST_CODE = 1337
 
         @JvmStatic
-        fun showAlbumDetails(host: AppCompatActivity, album: CompleteAlbum) {
+        fun showAlbumDetails(host: AppCompatActivity,
+                             album: CompleteAlbum) {
             host.startActivity(
                     Intent(host, PhotoLoadingActivity::class.java).apply {
                         putExtra(ALBUM_KEY, album)
                     }
             )
         }
+
+        @JvmStatic
+        fun Intent.album() = getParcelableExtra<CompleteAlbum>(ALBUM_KEY)
     }
 
     private val picker = ImagePicker()
+    private lateinit var photosAPI: PhotosAPI
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +51,8 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
             loadPicturePicker()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        photosAPI = PhotosAPI(application, token(), BuildConfig.DEBUG)
     }
 
     private fun loadPicturePicker() {
@@ -83,14 +92,13 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         if (requestCode == ImagePicker.SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
             val path = picker.getImageFilePath(data)
             val bitmap = BitmapFactory.decodeFile(path)
-
-            onLoading(bitmap)
+            onLoading(path.extractName(), bitmap)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
-    override fun onLoading(bitmap: Bitmap) {
+    override fun onLoading(fileName: String, bitmap: Bitmap) {
         imagePreview.setImageBitmap(bitmap)
         loadingUi.show()
         photoList.hide()
