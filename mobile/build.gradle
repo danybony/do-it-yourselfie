@@ -63,6 +63,7 @@ dependencies {
 
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.maayyaannkk:ImagePicker:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
