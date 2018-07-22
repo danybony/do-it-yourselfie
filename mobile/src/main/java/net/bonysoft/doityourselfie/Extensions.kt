@@ -37,3 +37,11 @@ fun AlbumResponse.toCompleteAlbum() =
         )
 
 val EMTPY_ALBUM_RESPONSE = AlbumResponse("", "", "", "")
+
+fun View.show() {
+    visibility = View.VISIBLE
+}
+
+fun View.hide() {
+    visibility = View.GONE
+}

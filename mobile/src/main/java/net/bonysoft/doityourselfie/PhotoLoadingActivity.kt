@@ -5,15 +5,19 @@ import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.support.design.widget.Snackbar
+import android.support.design.widget.Snackbar.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_photo_loading.*
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.views.PhotoLoadingView
 
-class PhotoLoadingActivity : AppCompatActivity() {
+class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
 
     companion object {
         private const val ALBUM_KEY = "net.bonysoft.doityourselfie.ALBUM"
@@ -79,8 +83,30 @@ class PhotoLoadingActivity : AppCompatActivity() {
         if (requestCode == ImagePicker.SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
             val path = picker.getImageFilePath(data)
             val bitmap = BitmapFactory.decodeFile(path)
+
+            onLoading(bitmap)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    override fun onLoading(bitmap: Bitmap) {
+        imagePreview.setImageBitmap(bitmap)
+        loadingUi.show()
+        photoList.hide()
+        addPicture.hide()
+    }
+
+    override fun onComplete() {
+        loadingUi.hide()
+        photoList.show()
+        addPicture.show()
+    }
+
+    override fun onError(throwable: Throwable) {
+        loadingUi.hide()
+        photoList.show()
+        addPicture.show()
+        make(photoList, "Error: ${throwable.message}", LENGTH_SHORT).show()
     }
 }
