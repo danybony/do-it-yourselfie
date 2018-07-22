@@ -111,6 +111,6 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     }
 
     override fun onAlbumSelected(completeAlbum: CompleteAlbum) {
-        //share album
+        PhotoLoadingActivity.showAlbumDetails(this, completeAlbum)
     }
 }
