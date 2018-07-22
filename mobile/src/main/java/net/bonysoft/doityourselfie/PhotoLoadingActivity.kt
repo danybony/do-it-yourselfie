@@ -2,8 +2,10 @@ package net.bonysoft.doityourselfie
 
 import `in`.mayanknagwanshi.imagepicker.imagePicker.ImagePicker
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
@@ -53,6 +55,7 @@ class PhotoLoadingActivity : AppCompatActivity() {
         picker.withActivity(this)
                 .chooseFromGallery(true)
                 .chooseFromCamera(false)
+                .withCompression(false)
                 .start()
     }
 
@@ -69,6 +72,15 @@ class PhotoLoadingActivity : AppCompatActivity() {
             if (permission == READ_EXTERNAL_STORAGE && grantResults[index] == PERMISSION_GRANTED) {
                 startPicker()
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == ImagePicker.SELECT_IMAGE && resultCode == Activity.RESULT_OK) {
+            val path = picker.getImageFilePath(data)
+            val bitmap = BitmapFactory.decodeFile(path)
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 }

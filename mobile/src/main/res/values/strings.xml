@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Do It Yourselfie</string>
     <string name="title_activity_photo_loading">Load photos</string>
+    <string name="loading_picture_on_google_photos">Loading picture on Google Photos…</string>
 </resources>
