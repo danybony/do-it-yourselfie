@@ -1,7 +1,9 @@
 package net.bonysoft.doityourselfie.photos.model
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 
 internal data class Album(val title: String)
@@ -17,6 +19,7 @@ data class AlbumResponse(
         val writeable: String
 )
 
+@Parcelize
 data class CompleteAlbum(
         val id: String,
         val title: String,
@@ -24,7 +27,7 @@ data class CompleteAlbum(
         val coverPhotoBaseUrl: String,
         val isWriteable: String,
         val totalMediaItems: Int
-)
+) : Parcelable
 
 @Suppress("ArrayInDataClass")
 data class AlbumListResponse(

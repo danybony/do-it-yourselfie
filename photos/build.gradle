@@ -32,6 +32,10 @@ kotlin {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
     def moshi_version = "1.6.0"
     def retrofit_version = "2.4.0"
