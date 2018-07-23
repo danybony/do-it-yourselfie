@@ -2,9 +2,11 @@ package net.bonysoft.doityourselfie.photos
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.util.Log
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
+import net.bonysoft.doityourselfie.photos.model.AlbumListResponse
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.model.ImageUploadResult
 import net.bonysoft.doityourselfie.photos.utils.asImageUploadRequestWith
@@ -29,16 +31,23 @@ class PhotosAPI(application: Application,
 
             do {
                 val page = apiService.fetchAlbums(tokenBearer, nextPageToken).await()
-                nextPageToken = page.nextPageToken
+                nextPageToken = nextPageToken.replaceWith(page)
                 albums.addAll(page.albums)
-            } while (nextPageToken != null)
+            } while (nextPageToken != null && nextPageToken.isNotEmpty())
             return@async albums
         }
     }
 
+    private fun String?.replaceWith(response: AlbumListResponse) : String? =
+            if (this != response.nextPageToken) {
+                response.nextPageToken
+            } else {
+                null
+            }
+
     fun uploadImage(album: CompleteAlbum, fileName: String, bitmap: Bitmap): Deferred<ImageUploadResult> {
         return async {
-//            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toByteArray(bitmap, fileName)).await()
+            //            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toByteArray(bitmap, fileName)).await()
             val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toMultipart(bitmap, fileName)).await()
             val token = response.string()
             apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(album.id, fileName)).await()
