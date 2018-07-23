@@ -137,8 +137,8 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         photoList.show()
         addPicture.show()
 
-        val message = "${errors.size} errors.\n" +
-                "${errors.mapIndexed { index, error -> "$index: ${error.status.code} - ${error.status.message}\n" }}"
+        val message = "${errors.size} errors." +
+                "${errors.mapIndexed { index, error -> "\n$index: ${error.status.code} - ${error.status.message}" }}"
 
         Timber.d(message)
 
