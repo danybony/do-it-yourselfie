@@ -6,9 +6,7 @@ import android.util.Log
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
-import net.bonysoft.doityourselfie.photos.model.AlbumListResponse
-import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
-import net.bonysoft.doityourselfie.photos.model.ImageUploadResult
+import net.bonysoft.doityourselfie.photos.model.*
 import net.bonysoft.doityourselfie.photos.utils.asImageUploadRequestWith
 import net.bonysoft.doityourselfie.photos.utils.toAlbumRequest
 
@@ -31,16 +29,16 @@ class PhotosAPI(application: Application,
 
             do {
                 val page = apiService.fetchAlbums(tokenBearer, nextPageToken).await()
-                nextPageToken = nextPageToken.replaceWith(page)
+                nextPageToken = nextPageToken.replaceWith(page.nextPageToken)
                 albums.addAll(page.albums)
             } while (nextPageToken != null && nextPageToken.isNotEmpty())
             return@async albums
         }
     }
 
-    private fun String?.replaceWith(response: AlbumListResponse) : String? =
-            if (this != response.nextPageToken) {
-                response.nextPageToken
+    private fun String?.replaceWith(nextPageToken: String?): String? =
+            if (this != nextPageToken) {
+                nextPageToken
             } else {
                 null
             }
@@ -54,5 +52,17 @@ class PhotosAPI(application: Application,
         }
     }
 
+    fun fetchPicturesInAlbum(album: CompleteAlbum, pageSize: Int = 100): Deferred<ArrayList<MediaItem>> {
+        return async {
+            val items = arrayListOf<MediaItem>()
+            var nextPageToken: String? = null
 
+            do {
+                val page = apiService.listPicturesInAlbum(tokenBearer, album.id, pageSize, nextPageToken).await()
+                nextPageToken = nextPageToken.replaceWith(page.nextPageToken)
+                items.addAll(page.mediaItems)
+            } while (nextPageToken != null && nextPageToken.isNotEmpty())
+            return@async items
+        }
+    }
 }

@@ -32,4 +32,10 @@ internal interface ApiService {
     @POST("./mediaItems:batchCreate")
     fun createMediaLink(@Header("Authorization") token: String,
                         @Body request: ImageUploadRequest): Deferred<ImageUploadResult>
+
+    @POST("./mediaItems:search")
+    fun listPicturesInAlbum(@Header("Authorization") token: String,
+                            @Query("albumId") albumId: String,
+                            @Query("pageSize") pageSize: Int = 100,
+                            @Query("pageToken") nextPageToken: String? = null): Deferred<PhotoListResponse>
 }
