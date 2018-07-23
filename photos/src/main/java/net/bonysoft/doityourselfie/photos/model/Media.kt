@@ -20,3 +20,24 @@ data class NewMediaItemResult(val uploadToken: String,
 
 @Suppress("ArrayInDataClass")
 data class ImageUploadResult(val newMediaItemResults: Array<NewMediaItemResult>)
+
+data class Photo(val cameraMake: String,
+                 val cameraModel: String,
+                 val focalLength: Float,
+                 val apertureFNumber: Int,
+                 val isoEquivalent: Int)
+
+data class MediaMetaData(val creationTime: String,
+                         val width: String,
+                         val height: String,
+                         val photo: Photo)
+
+data class MediaItem(val id: String,
+                     val productUrl: String,
+                     val baseUrl: String,
+                     val mimeType: String,
+                     val mediaMetadata: MediaMetaData)
+
+@Suppress("ArrayInDataClass")
+data class PhotoListResponse(val mediaItems: Array<MediaItem>,
+                             val nextPageToken: String?)
