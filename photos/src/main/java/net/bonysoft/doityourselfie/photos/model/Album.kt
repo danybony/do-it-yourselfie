@@ -25,7 +25,7 @@ data class CompleteAlbum(
         val title: String,
         val productUrl: String,
         val coverPhotoBaseUrl: String,
-        val isWriteable: String,
+        val isWriteable: String?,
         val totalMediaItems: Int
 ) : Parcelable
 

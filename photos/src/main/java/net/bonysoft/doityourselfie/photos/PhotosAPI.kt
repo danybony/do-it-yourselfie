@@ -6,16 +6,13 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.utils.asImageUploadRequestWith
 import net.bonysoft.doityourselfie.photos.utils.toAlbumRequest
 import java.io.ByteArrayOutputStream
 
 class PhotosAPI(application: Application,
                 oAuth2Token: String,
                 isDebug: Boolean = false) {
-
-    companion object {
-        private const val PHOTO_CONTENT_TYPE = "application/octet-stream"
-    }
 
     private val apiService = createLibraryComponent(application, isDebug).apiService()
     private val tokenBearer = "Bearer $oAuth2Token"
@@ -37,12 +34,15 @@ class PhotosAPI(application: Application,
         }
     }
 
-    fun uploadImage(fileName: String, bitmap: Bitmap): Deferred<String> {
+    fun uploadImage(album: CompleteAlbum, fileName: String, bitmap: Bitmap): Deferred<String> {
         return async {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 1, stream)
             val response = apiService.uploadMedia(tokenBearer, fileName, stream.toByteArray()).await()
-            response.string()
+            val token = response.string()
+
+            val r2 = apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(album.id, fileName)).await()
+            r2.string()
         }
     }
 

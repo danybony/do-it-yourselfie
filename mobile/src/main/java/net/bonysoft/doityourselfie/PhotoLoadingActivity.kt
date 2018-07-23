@@ -111,7 +111,7 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
 
         launch(UI) {
             try {
-                val token = photosAPI.uploadImage(fileName, bitmap)
+                val token = photosAPI.uploadImage(intent.album(), fileName, bitmap)
                 Timber.d(token.await())
                 onComplete()
             } catch(e: Exception) {
