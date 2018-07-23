@@ -15,7 +15,7 @@ internal interface ApiService {
 
     @GET("albums")
     fun fetchAlbums(@Header("Authorization") token: String,
-                    @Header("nextPageToken") nextPageToken: String? = null): Deferred<AlbumListResponse>
+                    @Query("pageToken") nextPageToken: String? = null): Deferred<AlbumListResponse>
 
     @POST("uploads")
     fun uploadMedia(@Header("Authorization") token: String,
