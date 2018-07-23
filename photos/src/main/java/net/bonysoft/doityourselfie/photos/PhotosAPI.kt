@@ -38,7 +38,8 @@ class PhotosAPI(application: Application,
 
     fun uploadImage(album: CompleteAlbum, fileName: String, bitmap: Bitmap): Deferred<ImageUploadResult> {
         return async {
-            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toByteArray(bitmap, fileName)).await()
+//            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toByteArray(bitmap, fileName)).await()
+            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toMultipart(bitmap, fileName)).await()
             val token = response.string()
             apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(album.id, fileName)).await()
         }

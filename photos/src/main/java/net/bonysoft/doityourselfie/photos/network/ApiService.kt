@@ -2,6 +2,8 @@ package net.bonysoft.doityourselfie.photos.network
 
 import kotlinx.coroutines.experimental.Deferred
 import net.bonysoft.doityourselfie.photos.model.*
+import net.bonysoft.doityourselfie.photos.utils.ImageTransformer.Companion.OCTET_TYPE
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -18,7 +20,14 @@ internal interface ApiService {
     @POST("uploads")
     fun uploadMedia(@Header("Authorization") token: String,
                     @Header("X-Goog-Upload-File-Name") fileName: String,
-                    @Body bytes: ByteArray): Deferred<ResponseBody>
+                    @Body bytes: ByteArray,
+                    @Header("Content-Type") contentType: String = OCTET_TYPE): Deferred<ResponseBody>
+
+    @Multipart
+    @POST("uploads")
+    fun uploadMedia(@Header("Authorization") token: String,
+                    @Header("X-Goog-Upload-File-Name") fileName: String,
+                    @Part image: MultipartBody.Part): Deferred<ResponseBody>
 
     @POST("./mediaItems:batchCreate")
     fun createMediaLink(@Header("Authorization") token: String,
