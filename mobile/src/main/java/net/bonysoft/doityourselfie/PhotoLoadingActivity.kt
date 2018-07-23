@@ -156,7 +156,7 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         addPicture.show()
         Timber.e(throwable)
         make(photoList, "Error: ${throwable.message}", LENGTH_INDEFINITE)
-                .setAction("DISMISS") { v -> }
+                .setAction("DISMISS") { }
                 .show()
     }
 }
