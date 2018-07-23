@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar
 import android.support.design.widget.Snackbar.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.orhanobut.hawk.Hawk
@@ -142,8 +143,12 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
                 "${errors.mapIndexed { index, error -> "$index: ${error.status.code} - ${error.status.message}\n" }}"
 
         Timber.d(message)
-        make(photoList, "Error: $message", LENGTH_INDEFINITE)
-                .setAction("DISMISS") { v -> }
+
+        AlertDialog.Builder(this)
+                .setTitle("Content error")
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
                 .show()
     }
 
