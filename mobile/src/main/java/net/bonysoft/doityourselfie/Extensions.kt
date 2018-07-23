@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.orhanobut.hawk.Hawk
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.model.MediaItem
 
 fun View.textView(@IdRes id: Int): TextView = findViewById(id)
 
@@ -20,6 +21,9 @@ fun Int.toPixel(resources: Resources): Int =
 
 fun CompleteAlbum.fetchImageOfSize(pixel: Int): String =
         "$coverPhotoBaseUrl=w$pixel-h$pixel"
+
+fun MediaItem.fetchImageOfSize(pixel: Int): String =
+        "$baseUrl=w$pixel-h$pixel"
 
 fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)
 

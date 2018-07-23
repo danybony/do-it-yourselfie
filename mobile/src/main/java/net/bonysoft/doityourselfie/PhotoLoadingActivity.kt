@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.GridLayoutManager
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_photo_loading.*
 import kotlinx.coroutines.experimental.android.UI
@@ -22,6 +23,7 @@ import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.model.NewMediaItemResult
 import net.bonysoft.doityourselfie.photos.views.PhotoLoadingView
+import net.bonysoft.doityourselfie.ui.PhotoAdapter
 import timber.log.Timber
 
 class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
@@ -46,6 +48,7 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
 
     private val picker = ImagePicker()
     private lateinit var photosAPI: PhotosAPI
+    private val adapter by lazy { PhotoAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +61,16 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         photosAPI = PhotosAPI(application, token(), BuildConfig.DEBUG)
+
+        photoList.let {
+            it.layoutManager = GridLayoutManager(this, 4)
+            it.adapter = adapter
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        onComplete()
     }
 
     private fun loadPicturePicker() {
@@ -129,7 +142,11 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         loadingUi.hide()
         photoList.show()
         addPicture.show()
-        Toast.makeText(this, "OK", Toast.LENGTH_LONG).show()
+
+        launch(UI) {
+            val items = photosAPI.fetchPicturesInAlbum(intent.album()).await()
+            adapter.addPhotos(items)
+        }
     }
 
     private fun onSoftError(errors: List<NewMediaItemResult>) {

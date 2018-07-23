@@ -24,7 +24,7 @@ data class ImageUploadResult(val newMediaItemResults: Array<NewMediaItemResult>)
 data class Photo(val cameraMake: String,
                  val cameraModel: String,
                  val focalLength: Float,
-                 val apertureFNumber: Int,
+                 val apertureFNumber: Float,
                  val isoEquivalent: Int)
 
 data class MediaMetaData(val creationTime: String,
