@@ -12,3 +12,11 @@ internal data class NewMediaItem(val description: String,
 internal data class ImageUploadRequest(val albumId: String,
                                        val newMediaItems: Array<NewMediaItem>)
 
+data class Status(val code: Int,
+                  val message: String)
+
+data class NewMediaItemResult(val uploadToken: String,
+                              val status: Status)
+
+@Suppress("ArrayInDataClass")
+data class ImageUploadResult(val newMediaItemResults: Array<NewMediaItemResult>)

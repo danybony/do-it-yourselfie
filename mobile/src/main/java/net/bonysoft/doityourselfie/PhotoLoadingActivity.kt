@@ -21,6 +21,7 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.model.NewMediaItemResult
 import net.bonysoft.doityourselfie.photos.views.PhotoLoadingView
 import timber.log.Timber
 
@@ -111,10 +112,15 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
 
         launch(UI) {
             try {
-                val token = photosAPI.uploadImage(intent.album(), fileName, bitmap)
-                Timber.d(token.await())
-                onComplete()
-            } catch(e: Exception) {
+                val results = photosAPI.uploadImage(intent.album(), fileName, bitmap).await()
+                val errors = results.newMediaItemResults.filter { it.status.code != 0 }
+
+                if (errors.isNotEmpty()) {
+                    onSoftError(errors)
+                } else {
+                    onComplete()
+                }
+            } catch (e: Exception) {
                 onError(e)
             }
         }
@@ -127,13 +133,27 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         Toast.makeText(this, "OK", Toast.LENGTH_LONG).show()
     }
 
+    private fun onSoftError(errors: List<NewMediaItemResult>) {
+        loadingUi.hide()
+        photoList.show()
+        addPicture.show()
+
+        val message = "${errors.size} errors.\n" +
+                "${errors.mapIndexed { index, error -> "$index: ${error.status.code} - ${error.status.message}\n" }}"
+
+        Timber.d(message)
+        make(photoList, "Error: $message", LENGTH_INDEFINITE)
+                .setAction("DISMISS") { v -> }
+                .show()
+    }
+
     override fun onError(throwable: Throwable) {
         loadingUi.hide()
         photoList.show()
         addPicture.show()
         Timber.e(throwable)
         make(photoList, "Error: ${throwable.message}", LENGTH_INDEFINITE)
-                .setAction("DISMISS") {v -> }
+                .setAction("DISMISS") { v -> }
                 .show()
     }
 }

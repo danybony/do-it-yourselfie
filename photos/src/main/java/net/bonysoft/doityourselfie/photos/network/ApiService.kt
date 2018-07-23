@@ -1,10 +1,7 @@
 package net.bonysoft.doityourselfie.photos.network
 
 import kotlinx.coroutines.experimental.Deferred
-import net.bonysoft.doityourselfie.photos.model.AlbumListResponse
-import net.bonysoft.doityourselfie.photos.model.AlbumRequest
-import net.bonysoft.doityourselfie.photos.model.AlbumResponse
-import net.bonysoft.doityourselfie.photos.model.ImageUploadRequest
+import net.bonysoft.doityourselfie.photos.model.*
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -25,5 +22,5 @@ internal interface ApiService {
 
     @POST("./mediaItems:batchCreate")
     fun createMediaLink(@Header("Authorization") token: String,
-                        @Body request: ImageUploadRequest): Deferred<ResponseBody>
+                        @Body request: ImageUploadRequest): Deferred<ImageUploadResult>
 }

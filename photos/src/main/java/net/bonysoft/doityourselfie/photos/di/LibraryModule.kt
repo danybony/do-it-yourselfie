@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import net.bonysoft.doityourselfie.photos.BuildConfig
 import net.bonysoft.doityourselfie.photos.network.ApiService
+import net.bonysoft.doityourselfie.photos.utils.ImageTransormer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -52,4 +53,7 @@ internal class LibraryModule(private val application: Application,
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService =
             retrofit.create(ApiService::class.java)
+
+    @Provides
+    fun provideImageTransformer(): ImageTransormer = ImageTransormer()
 }
