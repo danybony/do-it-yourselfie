@@ -1,6 +1,8 @@
 package net.bonysoft.doityourselfie.photos.di
 
+import android.app.Application
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
+import com.readystatesoftware.chuck.ChuckInterceptor
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -12,7 +14,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
-internal class LibraryModule(private val isDebug: Boolean) {
+internal class LibraryModule(private val application: Application,
+                             private val isDebug: Boolean) {
 
     @Provides
     fun provideMoshi(): Moshi =
@@ -34,6 +37,7 @@ internal class LibraryModule(private val isDebug: Boolean) {
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
             OkHttpClient.Builder()
                     .addInterceptor(loggingInterceptor)
+                    .addInterceptor(ChuckInterceptor(application))
                     .build()
 
     @Provides

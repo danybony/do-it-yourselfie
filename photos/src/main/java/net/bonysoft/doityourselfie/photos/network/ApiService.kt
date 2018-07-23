@@ -1,10 +1,10 @@
 package net.bonysoft.doityourselfie.photos.network
 
-import android.graphics.Bitmap
 import kotlinx.coroutines.experimental.Deferred
 import net.bonysoft.doityourselfie.photos.model.AlbumListResponse
 import net.bonysoft.doityourselfie.photos.model.AlbumRequest
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
+import okhttp3.ResponseBody
 import retrofit2.http.*
 
 internal interface ApiService {
@@ -20,5 +20,5 @@ internal interface ApiService {
     @POST("uploads")
     fun uploadMedia(@Header("Authorization") token: String,
                     @Header("X-Goog-Upload-File-Name") fileName: String,
-                    @Body bitmap: Bitmap): Deferred<String>
+                    @Body bytes: ByteArray): Deferred<ResponseBody>
 }

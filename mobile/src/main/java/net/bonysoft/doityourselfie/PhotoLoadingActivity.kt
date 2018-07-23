@@ -8,16 +8,21 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.support.design.widget.Snackbar.LENGTH_SHORT
-import android.support.design.widget.Snackbar.make
+import android.support.design.widget.Snackbar
+import android.support.design.widget.Snackbar.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat.checkSelfPermission
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_photo_loading.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.views.PhotoLoadingView
+import timber.log.Timber
 
 class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
 
@@ -103,18 +108,32 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         loadingUi.show()
         photoList.hide()
         addPicture.hide()
+
+        launch(UI) {
+            try {
+                val token = photosAPI.uploadImage(fileName, bitmap)
+                Timber.d(token.await())
+                onComplete()
+            } catch(e: Exception) {
+                onError(e)
+            }
+        }
     }
 
     override fun onComplete() {
         loadingUi.hide()
         photoList.show()
         addPicture.show()
+        Toast.makeText(this, "OK", Toast.LENGTH_LONG).show()
     }
 
     override fun onError(throwable: Throwable) {
         loadingUi.hide()
         photoList.show()
         addPicture.show()
-        make(photoList, "Error: ${throwable.message}", LENGTH_SHORT).show()
+        Timber.e(throwable)
+        make(photoList, "Error: ${throwable.message}", LENGTH_INDEFINITE)
+                .setAction("DISMISS") {v -> }
+                .show()
     }
 }

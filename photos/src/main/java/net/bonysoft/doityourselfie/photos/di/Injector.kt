@@ -1,6 +1,8 @@
 package net.bonysoft.doityourselfie.photos.di
 
-internal fun createLibraryComponent(isDebug: Boolean): LibraryComponent =
+import android.app.Application
+
+internal fun createLibraryComponent(application: Application, isDebug: Boolean): LibraryComponent =
         DaggerLibraryComponent.builder()
-                .libraryModule(LibraryModule(isDebug))
+                .libraryModule(LibraryModule(application, isDebug))
                 .build()
