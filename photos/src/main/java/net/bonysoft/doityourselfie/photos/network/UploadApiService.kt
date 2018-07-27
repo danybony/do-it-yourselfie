@@ -4,16 +4,16 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import okhttp3.*
 
-class UploadApiService(private val client: OkHttpClient,
-                       root: String = API_ENDPOINT) {
+internal class UploadApiService(private val client: OkHttpClient,
+                                root: String = API_ENDPOINT) {
 
     private val endpoint = "${root}uploads"
     private val contentType = MediaType.parse(OCTET_TYPE)
 
 
-    fun uploadMedia(token: String,
-                    fileName: String,
-                    bytes: ByteArray): Deferred<String> {
+    internal fun uploadMedia(token: String,
+                             fileName: String,
+                             bytes: ByteArray): Deferred<String> {
 
         return async {
             val request = requestBuilderFor(token, fileName)
