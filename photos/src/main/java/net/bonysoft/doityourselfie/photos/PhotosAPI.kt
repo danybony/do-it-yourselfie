@@ -2,7 +2,6 @@ package net.bonysoft.doityourselfie.photos
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.util.Log
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
@@ -16,7 +15,8 @@ class PhotosAPI(application: Application,
 
     private val injector = createLibraryComponent(application, isDebug)
     private val apiService = injector.apiService()
-    private val imageTransormer = injector.imageTransformer()
+    private val imageTransformer = injector.imageTransformer()
+    private val uploadApiService = injector.uploadApiService()
     private val tokenBearer = "Bearer $oAuth2Token"
 
     fun createAlbum(albumName: String) =
@@ -45,8 +45,9 @@ class PhotosAPI(application: Application,
 
     fun uploadImage(album: CompleteAlbum, fileName: String, bitmap: Bitmap): Deferred<ImageUploadResult> {
         return async {
-            //            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toByteArray(bitmap, fileName)).await()
-            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransormer.toMultipart(bitmap, fileName)).await()
+            //            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransformer.toByteArray(bitmap, fileName)).await()
+//            val response = apiService.uploadMedia(tokenBearer, fileName, imageTransformer.toMultipart(bitmap, fileName)).await()
+            val response = uploadApiService.uploadMedia(tokenBearer, fileName, imageTransformer.toByteArray(bitmap, fileName)).await()
             val token = response.string()
             apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(album.id, fileName)).await()
         }
@@ -60,7 +61,9 @@ class PhotosAPI(application: Application,
             do {
                 val page = apiService.listPicturesInAlbum(tokenBearer, album.id, pageSize, nextPageToken).await()
                 nextPageToken = nextPageToken.replaceWith(page.nextPageToken)
-                items.addAll(page.mediaItems)
+                if (page.mediaItems != null) {
+                    items.addAll(page.mediaItems)
+                }
             } while (nextPageToken != null && nextPageToken.isNotEmpty())
             return@async items
         }

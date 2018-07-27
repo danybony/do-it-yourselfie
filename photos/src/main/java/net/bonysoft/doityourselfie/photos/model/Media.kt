@@ -39,5 +39,5 @@ data class MediaItem(val id: String,
                      val mediaMetadata: MediaMetaData)
 
 @Suppress("ArrayInDataClass")
-data class PhotoListResponse(val mediaItems: Array<MediaItem>,
+data class PhotoListResponse(val mediaItems: Array<MediaItem>?,
                              val nextPageToken: String?)

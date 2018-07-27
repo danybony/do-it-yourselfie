@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import net.bonysoft.doityourselfie.photos.BuildConfig
 import net.bonysoft.doityourselfie.photos.network.ApiService
+import net.bonysoft.doityourselfie.photos.network.UploadApiService
 import net.bonysoft.doityourselfie.photos.utils.ImageTransformer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -56,4 +57,8 @@ internal class LibraryModule(private val application: Application,
 
     @Provides
     fun provideImageTransformer(): ImageTransformer = ImageTransformer(application)
+
+    @Provides
+    fun provideUploadApiService(client: OkHttpClient): UploadApiService =
+            UploadApiService(client, BuildConfig.API_ENDPOINT)
 }
