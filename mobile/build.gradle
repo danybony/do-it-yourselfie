@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 27
@@ -20,18 +21,57 @@ android {
     }
 }
 
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
+    def lifecycle_version = "1.1.1"
     def withoutV4 = { exclude group: 'com.android.support', module: 'support-v4' }
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.google.android.gms:play-services-auth:15.0.1', withoutV4
-    implementation 'com.android.support:support-media-compat:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1', withoutV4
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
+    implementation 'com.android.support:support-media-compat:27.1.1', withoutV4
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    implementation "android.arch.lifecycle:runtime:$lifecycle_version"
+    annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+    kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4"
+
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2', withoutV4
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation project(":secrets")
+    implementation project(":photos")
+
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    implementation 'com.google.api-client:google-api-client:1.22.0'
+    implementation 'com.google.api-client:google-api-client-android:1.22.0'
+
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.maayyaannkk:ImagePicker:1.0.1'
+    implementation "com.orhanobut:hawk:2.0.1"
+
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-core:0.9.24'
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-attr:0.9.24'
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-crash:0.9.24'
+    debugImplementation 'com.willowtreeapps.hyperion:hyperion-timber:0.9.24'
+
+    debugImplementation 'com.github.Commit451:Hyperion-Chuck:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
