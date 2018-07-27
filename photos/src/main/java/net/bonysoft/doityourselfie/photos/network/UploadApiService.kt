@@ -13,14 +13,14 @@ class UploadApiService(private val client: OkHttpClient,
 
     fun uploadMedia(token: String,
                     fileName: String,
-                    bytes: ByteArray): Deferred<ResponseBody> {
+                    bytes: ByteArray): Deferred<String> {
 
         return async {
             val request = requestBuilderFor(token, fileName)
                     .post(RequestBody.create(contentType, bytes))
                     .build()
 
-            client.newCall(request).execute().body()!!
+            client.newCall(request).execute().body()!!.string()
         }
     }
 
@@ -28,8 +28,8 @@ class UploadApiService(private val client: OkHttpClient,
                                   fileName: String): Request.Builder =
             Request.Builder()
                     .url(endpoint)
-                    .addHeader("Authorization", token)
-                    .addHeader("X-Goog-Upload-File-Name", fileName)
+                    .addHeader(AUTHORIZATION, token)
+                    .addHeader(UPLOAD_FILENAME, fileName)
 
 
 }
