@@ -1,30 +1,23 @@
 package net.bonysoft.doityourselfie
 
 
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
-import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import net.bonysoft.doityourselfie.authentication.AuthenticationListener
-import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.ui.AlbumAdapter
 import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
-class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedListener {
-    override fun onUserRecoverableException(e: UserRecoverableAuthIOException) {
+class MainActivity : AppCompatActivity(), AlbumSelectedListener {
 
-    }
 
-    private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
+
     private lateinit var photosAPI: PhotosAPI
 
     private val adapter by lazy { AlbumAdapter(this, this) }
@@ -32,7 +25,6 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        authenticator = GoogleSignInAuthenticator.attachTo(this)
 
         albumList.let {
             it.adapter = adapter
@@ -41,28 +33,28 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
 
         albumView.setListener(this)
 
-        showLoggedOutUi()
+//        showLoggedOutUi()
     }
 
-    override fun showLoggedUi(token: String?) {
-        loggedInUi.visibility = View.VISIBLE
-        loggedOutUi.visibility = View.GONE
-        btnLogout.setOnClickListener {
-            authenticator.logout()
-        }
-
-        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
-        Hawk.put(TOKEN_KEY, token)
-        albumName.setText("Test Album 001")
-
-        btnCreateAlbum.setOnClickListener {
-            createAlbum(albumName.text.toString())
-        }
-
-        btnListAlbums.setOnClickListener {
-            fetchAlbums()
-        }
-    }
+//    override fun showLoggedUi(token: String?) {
+//        loggedInUi.visibility = View.VISIBLE
+//        loggedOutUi.visibility = View.GONE
+//        btnLogout.setOnClickListener {
+//            Hawk.delete(TOKEN_KEY)
+//        }
+//
+//        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
+//        Hawk.put(TOKEN_KEY, token)
+//        albumName.setText("Test Album 001")
+//
+//        btnCreateAlbum.setOnClickListener {
+//            createAlbum(albumName.text.toString())
+//        }
+//
+//        btnListAlbums.setOnClickListener {
+//            fetchAlbums()
+//        }
+//    }
 
     private fun createAlbum(albumName: String) {
         launch(UI) {
@@ -98,23 +90,16 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
         }
     }
 
-    override fun showLoggedOutUi() {
-        loggedInUi.visibility = View.GONE
-        loggedOutUi.visibility = View.VISIBLE
-        listUi.visibility = View.GONE
-        singleAlbumUi.visibility = View.GONE
-        btnLogin.setOnClickListener {
-            authenticator.authenticate()
-        }
-    }
+//    override fun showLoggedOutUi() {
+//        loggedInUi.visibility = View.GONE
+//        loggedOutUi.visibility = View.VISIBLE
+//        listUi.visibility = View.GONE
+//        singleAlbumUi.visibility = View.GONE
+//        btnLogin.setOnClickListener {
+//
+//        }
+//    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (authenticator.shouldParseResult(requestCode)) {
-            authenticator.parseResult(data!!)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 
     override fun onAlbumSelected(completeAlbum: CompleteAlbum) {
         PhotoLoadingActivity.showAlbumDetails(this, completeAlbum)
