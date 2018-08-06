@@ -56,6 +56,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(":secrets")
     implementation project(":photos")
+    implementation project(":authentication")
 
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.api-client:google-api-client:1.22.0'

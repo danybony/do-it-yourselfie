@@ -1,1 +1,1 @@
-include ':mobile', ':things', ':secrets', ':photos', ':camera', ':companion'
+include ':mobile', ':things', ':secrets', ':photos', ':camera', ':companion', ':authentication'
