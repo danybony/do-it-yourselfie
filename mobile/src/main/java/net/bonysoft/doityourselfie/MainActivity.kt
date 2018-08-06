@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
@@ -19,6 +20,9 @@ import net.bonysoft.doityourselfie.ui.AlbumAdapter
 import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
 class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedListener {
+    override fun onUserRecoverableException(e: UserRecoverableAuthIOException) {
+
+    }
 
     private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
     private lateinit var photosAPI: PhotosAPI
