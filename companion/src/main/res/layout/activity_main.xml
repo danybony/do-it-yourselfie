@@ -51,15 +51,36 @@
             android:visibility="gone"
             app:constraint_referenced_ids="btnLogin" />
 
+        <TextView
+            android:id="@+id/tokenLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="96dp"
+            android:text="Token"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tokenValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="32dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tokenLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tokenLabel"
+            tools:text="SAMPLE_TOKEN" />
+
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="140dp"
             android:text="Logout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tokenValue"
+            app:layout_constraintTop_toBottomOf="@+id/tokenValue"
             tools:visibility="visible" />
 
         <android.support.constraint.Group
@@ -67,8 +88,10 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
-            app:constraint_referenced_ids="btnLogout"
-            tools:visibility="visible" />
+            app:constraint_referenced_ids="btnLogout,tokenLabel,tokenValue"
+            tools:visibility="visible"/>
+
+
 
     </android.support.constraint.ConstraintLayout>
 

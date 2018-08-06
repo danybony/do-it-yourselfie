@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.bonysoft.doityourselfie.companion">
 
-    <application>
+    <application android:name=".CompanionApp">
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
