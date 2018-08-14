@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
 import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
+import net.bonysoft.doityourselfie.communication.TokenSender
 
 class MainActivity : AppCompatActivity(), AuthenticationListener {
 
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
     }
 
     private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
+    private lateinit var tokenSender: TokenSender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +29,12 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         authenticator = GoogleSignInAuthenticator.attachTo(this)
 
         if (Hawk.contains(TOKEN_KEY)) {
-            showLoggedUi(Hawk.get(TOKEN_KEY))
+            with(Hawk.get(TOKEN_KEY) as String) {
+                tokenSender = TokenSender.attachTo(this@MainActivity, this)
+                showLoggedUi(Hawk.get(TOKEN_KEY))
+            }
         } else {
+            tokenSender = TokenSender.attachTo(this)
             showLoggedOutUi()
         }
     }
@@ -46,9 +52,11 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         loggedOutUi.visibility = View.GONE
         btnLogout.setOnClickListener {
             authenticator.logout()
+            tokenSender.purgeMessage()
         }
 
         Hawk.put(TOKEN_KEY, token!!)
+        tokenSender.publishMessage(token)
 
         tokenValue.text = token
     }

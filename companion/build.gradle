@@ -30,6 +30,7 @@ dependencies {
     def withoutV4 = { exclude group: 'com.android.support', module: 'support-v4' }
 
     implementation project(":authentication")
+    implementation project(":communication")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1', withoutV4

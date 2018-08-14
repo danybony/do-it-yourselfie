@@ -34,14 +34,24 @@ class TokenSender private constructor(private val activity: AppCompatActivity,
     }
 
     fun publishMessage(token: String) {
+        purgeMessageIfPresent()
         message = Message(token.toByteArray())
         publishMessage()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onLifecycleStop() {
+    fun purgeMessage() {
+        purgeMessageIfPresent()
+        message = null
+    }
+
+    private fun purgeMessageIfPresent() {
         message?.let {
             Nearby.getMessagesClient(activity).unpublish(it)
         }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onLifecycleStop() {
+        purgeMessageIfPresent()
     }
 }
