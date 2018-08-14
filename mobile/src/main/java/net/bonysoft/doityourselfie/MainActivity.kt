@@ -6,17 +6,22 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import net.bonysoft.doityourselfie.communication.TokenManager
+import net.bonysoft.doityourselfie.communication.TokenReceiver
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.ui.AlbumAdapter
 import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
-class MainActivity : AppCompatActivity(), AlbumSelectedListener {
+class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
 
-
+    companion object {
+        const val TOKEN_KEY = "authentication_token"
+    }
 
     private lateinit var photosAPI: PhotosAPI
 
@@ -33,28 +38,34 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener {
 
         albumView.setListener(this)
 
-//        showLoggedOutUi()
+        if (Hawk.contains(TOKEN_KEY)) {
+            onTokenReceived(TOKEN_KEY)
+        } else {
+            showLoggedOutUi()
+            TokenManager.attachTo(this)
+        }
     }
 
-//    override fun showLoggedUi(token: String?) {
-//        loggedInUi.visibility = View.VISIBLE
-//        loggedOutUi.visibility = View.GONE
-//        btnLogout.setOnClickListener {
-//            Hawk.delete(TOKEN_KEY)
-//        }
-//
-//        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
-//        Hawk.put(TOKEN_KEY, token)
-//        albumName.setText("Test Album 001")
-//
-//        btnCreateAlbum.setOnClickListener {
-//            createAlbum(albumName.text.toString())
-//        }
-//
-//        btnListAlbums.setOnClickListener {
-//            fetchAlbums()
-//        }
-//    }
+
+    override fun onTokenReceived(token: String) {
+        loggedInUi.visibility = View.VISIBLE
+        loggedOutUi.visibility = View.GONE
+        btnLogout.setOnClickListener {
+            Hawk.delete(TOKEN_KEY)
+        }
+
+        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
+        Hawk.put(TOKEN_KEY, token)
+        albumName.setText("Test Album 001")
+
+        btnCreateAlbum.setOnClickListener {
+            createAlbum(albumName.text.toString())
+        }
+
+        btnListAlbums.setOnClickListener {
+            fetchAlbums()
+        }
+    }
 
     private fun createAlbum(albumName: String) {
         launch(UI) {
@@ -90,15 +101,12 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener {
         }
     }
 
-//    override fun showLoggedOutUi() {
-//        loggedInUi.visibility = View.GONE
-//        loggedOutUi.visibility = View.VISIBLE
-//        listUi.visibility = View.GONE
-//        singleAlbumUi.visibility = View.GONE
-//        btnLogin.setOnClickListener {
-//
-//        }
-//    }
+    private fun showLoggedOutUi() {
+        loggedInUi.visibility = View.GONE
+        loggedOutUi.visibility = View.VISIBLE
+        listUi.visibility = View.GONE
+        singleAlbumUi.visibility = View.GONE
+    }
 
 
     override fun onAlbumSelected(completeAlbum: CompleteAlbum) {
