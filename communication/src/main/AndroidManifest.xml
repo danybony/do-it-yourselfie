@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="net.bonysoft.doityourselfie.communication">
+
+    <application>
+        <meta-data
+            android:name="com.google.android.nearby.messages.API_KEY"
+            android:value="@string/nearby_api_secret" />
+    </application>
+</manifest>
