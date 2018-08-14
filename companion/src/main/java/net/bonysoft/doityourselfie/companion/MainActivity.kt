@@ -53,11 +53,14 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         btnLogout.setOnClickListener {
             authenticator.logout()
             tokenSender.purgeMessage()
+            Hawk.delete(TOKEN_KEY)
+        }
+
+        btnSendToken.setOnClickListener {
+            tokenSender.publishMessage(token!!)
         }
 
         Hawk.put(TOKEN_KEY, token!!)
-        tokenSender.publishMessage(token)
-
         tokenValue.text = token
     }
 
@@ -67,8 +70,6 @@ class MainActivity : AppCompatActivity(), AuthenticationListener {
         btnLogin.setOnClickListener {
             authenticator.authenticate()
         }
-
-        Hawk.delete(TOKEN_KEY)
     }
 
     override fun onUserRecoverableException(e: Exception) {

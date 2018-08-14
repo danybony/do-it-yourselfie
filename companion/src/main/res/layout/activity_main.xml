@@ -83,14 +83,23 @@
             app:layout_constraintTop_toBottomOf="@+id/tokenValue"
             tools:visibility="visible" />
 
+        <Button
+            android:id="@+id/btnSendToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:text="Send token"
+            app:layout_constraintBottom_toBottomOf="@+id/btnLogout"
+            app:layout_constraintEnd_toStartOf="@+id/btnLogout"
+            app:layout_constraintTop_toTopOf="@+id/btnLogout" />
+
         <android.support.constraint.Group
             android:id="@+id/loggedInUi"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="gone"
-            app:constraint_referenced_ids="btnLogout,tokenLabel,tokenValue"
-            tools:visibility="visible"/>
-
+            app:constraint_referenced_ids="btnLogout,tokenLabel,tokenValue,btnSendToken"
+            tools:visibility="visible" />
 
 
     </android.support.constraint.ConstraintLayout>

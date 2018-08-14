@@ -1,7 +1,7 @@
 package net.bonysoft.doityourselfie.ui
 
 import android.content.Context
-import android.support.v7.widget.CardView
+import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import net.bonysoft.doityourselfie.*
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
@@ -9,7 +9,7 @@ import kotlin.properties.Delegates
 
 class AlbumView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : CardView(context, attrs, defStyleAttr) {
+) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private val titleView by lazyTextView(R.id.albumTitle)
     private val productUrlView by lazyTextView(R.id.productUrl)

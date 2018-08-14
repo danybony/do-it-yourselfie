@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
         loggedOutUi.visibility = View.GONE
         btnLogout.setOnClickListener {
             Hawk.delete(TOKEN_KEY)
+            showLoggedOutUi()
         }
 
         photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
