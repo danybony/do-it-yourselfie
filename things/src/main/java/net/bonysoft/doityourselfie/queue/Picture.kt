@@ -8,8 +8,8 @@ import android.arch.persistence.room.PrimaryKey
 class Picture {
 
     @PrimaryKey
-    @ColumnInfo(name = "image_url")
-    lateinit var imageUrl: String
+    @ColumnInfo(name = "image_file")
+    lateinit var imageFile: String
 
     @ColumnInfo(name = "uploaded")
     var uploaded: Int = 0

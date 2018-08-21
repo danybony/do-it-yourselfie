@@ -7,7 +7,7 @@ import net.bonysoft.doityourselfie.queue.QueueDatabase
 class PicturesUploadQueue(private val database: QueueDatabase) {
 
     fun put(picturePath: String) {
-        val picture = Picture().apply { this.imageUrl = picturePath }
+        val picture = Picture().apply { this.imageFile = picturePath }
         database.pictureDao().put(picture)
     }
 
@@ -17,7 +17,7 @@ class PicturesUploadQueue(private val database: QueueDatabase) {
 
     fun markPictureAsUploaded(picturePath: String) {
         val picture = Picture().apply {
-            this.imageUrl = picturePath
+            this.imageFile = picturePath
             this.uploaded = 1
         }
         database.pictureDao().update(picture)

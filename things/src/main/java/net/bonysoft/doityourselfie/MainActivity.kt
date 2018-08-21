@@ -8,10 +8,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.widget.ImageView
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
 import net.bonysoft.doityourselfie.queue.QueueDatabase
-import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
 
@@ -52,6 +56,7 @@ class MainActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
+        scheduleUploadWorker()
         startShootingProcess() // TODO do it on button clicked
     }
 
@@ -72,12 +77,7 @@ class MainActivity : Activity() {
         Thread {
             val storedPath = saveImageToFile(imageBytes)
             if (storedPath != null) {
-                Timber.d("%s", picturesUploadQueue.picturesToUpload())
                 picturesUploadQueue.put(storedPath)
-                Timber.d("%s", picturesUploadQueue.picturesToUpload())
-                Thread.sleep(10000)
-                picturesUploadQueue.markPictureAsUploaded(storedPath)
-                Timber.d("%s", picturesUploadQueue.picturesToUpload())
             }
         }.start()
 
@@ -92,6 +92,18 @@ class MainActivity : Activity() {
                 camera.takePicture()
             }
         }
+    }
+
+    private fun scheduleUploadWorker() {
+        val uploadConstraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val workRequest = PeriodicWorkRequest.Builder(PicturesUploadWorker::class.java, 1, TimeUnit.MINUTES)
+            .setConstraints(uploadConstraints)
+            .build()
+
+        WorkManager.getInstance().enqueue(workRequest)
     }
 
 }
