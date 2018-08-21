@@ -1,6 +1,7 @@
 package net.bonysoft.doityourselfie
 
 import android.app.Activity
+import android.arch.persistence.room.Room
 import android.graphics.BitmapFactory
 import android.media.ImageReader
 import android.os.Bundle
@@ -9,12 +10,15 @@ import android.os.HandlerThread
 import android.widget.ImageView
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
+import net.bonysoft.doityourselfie.queue.QueueDatabase
+import timber.log.Timber
 
 class MainActivity : Activity() {
 
     private lateinit var camera: SelfieCamera
     private lateinit var cameraThread: HandlerThread
     private lateinit var cameraHandler: Handler
+    private lateinit var picturesUploadQueue: PicturesUploadQueue
     private val imageViews = ArrayList<ImageView>()
     private var nextImageId = 0
 
@@ -27,6 +31,8 @@ class MainActivity : Activity() {
         imageViews.add(findViewById(R.id.imageBottomRight))
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
+
+        picturesUploadQueue = PicturesUploadQueue(Room.databaseBuilder(applicationContext, QueueDatabase::class.java, "pictures_queue").build())
 
         cameraThread = HandlerThread("CameraBackgroundThread")
         cameraThread.start()
@@ -64,10 +70,18 @@ class MainActivity : Activity() {
             return
         }
         Thread {
-            saveImageToFile(imageBytes)
+            val storedPath = saveImageToFile(imageBytes)
+            if (storedPath != null) {
+                Timber.d("%s", picturesUploadQueue.picturesToUpload())
+                picturesUploadQueue.put(storedPath)
+                Timber.d("%s", picturesUploadQueue.picturesToUpload())
+                Thread.sleep(10000)
+                picturesUploadQueue.markPictureAsUploaded(storedPath)
+                Timber.d("%s", picturesUploadQueue.picturesToUpload())
+            }
         }.start()
 
-        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes!!.size) // TODO resize depending on the view
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) // TODO resize depending on the view
         runOnUiThread {
             imageViews[nextImageId].setImageBitmap(bitmap)
             nextImageId++
