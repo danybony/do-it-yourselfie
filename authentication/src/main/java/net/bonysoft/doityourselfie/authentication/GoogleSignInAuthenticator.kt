@@ -5,7 +5,6 @@ import android.arch.lifecycle.LifecycleObserver
 import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -16,8 +15,6 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
-import net.bonysoft.doityourselfie.R
-import timber.log.Timber
 
 
 class GoogleSignInAuthenticator<T> private constructor(private val host: T) : LifecycleObserver
@@ -70,7 +67,7 @@ class GoogleSignInAuthenticator<T> private constructor(private val host: T) : Li
             }
 
         } catch (e: UserRecoverableAuthIOException) {
-            Timber.e(e) //This should happen only in specific cases
+            host.onUserRecoverableException(e)
         }
 
     }

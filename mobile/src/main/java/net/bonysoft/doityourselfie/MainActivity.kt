@@ -1,9 +1,8 @@
 package net.bonysoft.doityourselfie
 
 
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
@@ -11,16 +10,19 @@ import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import net.bonysoft.doityourselfie.authentication.AuthenticationListener
-import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
+import net.bonysoft.doityourselfie.communication.TokenManager
+import net.bonysoft.doityourselfie.communication.TokenReceiver
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.ui.AlbumAdapter
 import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
-class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedListener {
+class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
 
-    private lateinit var authenticator: GoogleSignInAuthenticator<MainActivity>
+    companion object {
+        const val TOKEN_KEY = "authentication_token"
+    }
+
     private lateinit var photosAPI: PhotosAPI
 
     private val adapter by lazy { AlbumAdapter(this, this) }
@@ -28,7 +30,6 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        authenticator = GoogleSignInAuthenticator.attachTo(this)
 
         albumList.let {
             it.adapter = adapter
@@ -37,14 +38,21 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
 
         albumView.setListener(this)
 
-        showLoggedOutUi()
+        if (Hawk.contains(TOKEN_KEY)) {
+            onTokenReceived(TOKEN_KEY)
+        } else {
+            showLoggedOutUi()
+            TokenManager.attachTo(this)
+        }
     }
 
-    override fun showLoggedUi(token: String?) {
+
+    override fun onTokenReceived(token: String) {
         loggedInUi.visibility = View.VISIBLE
         loggedOutUi.visibility = View.GONE
         btnLogout.setOnClickListener {
-            authenticator.logout()
+            Hawk.delete(TOKEN_KEY)
+            showLoggedOutUi()
         }
 
         photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
@@ -94,23 +102,13 @@ class MainActivity : AppCompatActivity(), AuthenticationListener, AlbumSelectedL
         }
     }
 
-    override fun showLoggedOutUi() {
+    private fun showLoggedOutUi() {
         loggedInUi.visibility = View.GONE
         loggedOutUi.visibility = View.VISIBLE
         listUi.visibility = View.GONE
         singleAlbumUi.visibility = View.GONE
-        btnLogin.setOnClickListener {
-            authenticator.authenticate()
-        }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (authenticator.shouldParseResult(requestCode)) {
-            authenticator.parseResult(data!!)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-    }
 
     override fun onAlbumSelected(completeAlbum: CompleteAlbum) {
         PhotoLoadingActivity.showAlbumDetails(this, completeAlbum)
