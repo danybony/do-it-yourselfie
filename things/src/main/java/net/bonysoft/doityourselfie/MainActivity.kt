@@ -6,11 +6,17 @@ import android.media.ImageReader
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.view.KeyEvent
 import android.widget.ImageView
+import com.google.android.things.contrib.driver.button.Button
+import com.google.android.things.contrib.driver.button.ButtonInputDriver
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
+import timber.log.Timber
 
 class MainActivity : Activity() {
+
+    private lateinit var buttonInputDriver: ButtonInputDriver
 
     private lateinit var camera: SelfieCamera
     private lateinit var cameraThread: HandlerThread
@@ -28,6 +34,12 @@ class MainActivity : Activity() {
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
+        buttonInputDriver = ButtonInputDriver(
+            BoardDefaults.gpioForButton,
+            Button.LogicState.PRESSED_WHEN_LOW,
+            KeyEvent.KEYCODE_SPACE)
+        buttonInputDriver.register()
+
         cameraThread = HandlerThread("CameraBackgroundThread")
         cameraThread.start()
         cameraHandler = Handler(cameraThread.looper)
@@ -44,13 +56,24 @@ class MainActivity : Activity() {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        startShootingProcess() // TODO do it on button clicked
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_SPACE) {
+            Timber.d("Button pressed")
+            startShootingProcess()
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun startShootingProcess() {
         camera.takePicture()
+    }
+
+    override fun onStop() {
+        buttonInputDriver.unregister()
+        buttonInputDriver.close()
+        super.onStop()
     }
 
     override fun onDestroy() {
