@@ -1,7 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:gradle-build-properties-plugin:0.4.1'
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.novoda.build-properties'
 apply plugin: 'kotlin-kapt'
+
+buildProperties {
+    hardwareConfig {
+        using project.file('hardware.properties')
+    }
+}
 
 android {
     compileSdkVersion 27
@@ -12,6 +28,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // These config flags are loaded from hardware.properties, if present
+        buildConfigBoolean 'USE_RAINBOW_HAT', buildProperties.hardwareConfig['use_rainbow_hat'].or(false)
+        buildConfigBoolean 'NC_BUTTON', buildProperties.hardwareConfig['nc_button'].or(false)
     }
     buildTypes {
         release {
