@@ -34,9 +34,10 @@ class MainActivity : Activity() {
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
+        val logicState = if (NORMALLY_CLOSED_BUTTON) Button.LogicState.PRESSED_WHEN_HIGH else Button.LogicState.PRESSED_WHEN_LOW
         buttonInputDriver = ButtonInputDriver(
             BoardDefaults.gpioForButton,
-            Button.LogicState.PRESSED_WHEN_LOW,
+            logicState,
             KeyEvent.KEYCODE_SPACE)
         buttonInputDriver.register()
 

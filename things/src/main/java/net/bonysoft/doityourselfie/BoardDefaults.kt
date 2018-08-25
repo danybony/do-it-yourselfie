@@ -3,7 +3,6 @@ package net.bonysoft.doityourselfie
 import android.os.Build
 
 object BoardDefaults {
-    private const val USE_RAINBOW_HAT = true
 
     private const val DEVICE_RPI3 = "rpi3"
     private const val DEVICE_IMX6UL_PICO = "imx6ul_pico"
@@ -16,3 +15,6 @@ object BoardDefaults {
         else -> throw IllegalStateException("Unknown Build.DEVICE " + Build.DEVICE)
     }
 }
+
+private const val USE_RAINBOW_HAT = false
+internal const val NORMALLY_CLOSED_BUTTON = true
