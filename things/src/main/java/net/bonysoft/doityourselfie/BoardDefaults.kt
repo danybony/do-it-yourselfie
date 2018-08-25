@@ -1,6 +1,7 @@
 package net.bonysoft.doityourselfie
 
 import android.os.Build
+import net.bonysoft.doityourselfie.BuildConfig.USE_RAINBOW_HAT
 
 object BoardDefaults {
 
@@ -22,6 +23,3 @@ object BoardDefaults {
         else -> throw IllegalStateException("Unknown Build.DEVICE " + Build.DEVICE)
     }
 }
-
-private const val USE_RAINBOW_HAT = false
-internal const val NORMALLY_CLOSED_BUTTON = true
