@@ -7,17 +7,23 @@ import android.media.ImageReader
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.view.KeyEvent
 import android.widget.ImageView
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import com.google.android.things.contrib.driver.button.Button
+import com.google.android.things.contrib.driver.button.ButtonInputDriver
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
 import net.bonysoft.doityourselfie.queue.QueueDatabase
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
+
+    private lateinit var buttonInputDriver: ButtonInputDriver
 
     private lateinit var camera: SelfieCamera
     private lateinit var cameraThread: HandlerThread
@@ -35,6 +41,12 @@ class MainActivity : Activity() {
         imageViews.add(findViewById(R.id.imageBottomRight))
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
+
+        buttonInputDriver = ButtonInputDriver(
+            BoardDefaults.gpioForButton,
+            Button.LogicState.PRESSED_WHEN_LOW,
+            KeyEvent.KEYCODE_SPACE)
+        buttonInputDriver.register()
 
         picturesUploadQueue = PicturesUploadQueue(Room.databaseBuilder(applicationContext, QueueDatabase::class.java, "pictures_queue").build())
 
@@ -57,11 +69,26 @@ class MainActivity : Activity() {
     override fun onStart() {
         super.onStart()
         scheduleUploadWorker()
-        startShootingProcess() // TODO do it on button clicked
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_SPACE) {
+            Timber.d("Button pressed")
+            startShootingProcess()
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun startShootingProcess() {
         camera.takePicture()
+    }
+
+    override fun onStop() {
+        buttonInputDriver.unregister()
+        buttonInputDriver.close()
+        super.onStop()
     }
 
     override fun onDestroy() {
