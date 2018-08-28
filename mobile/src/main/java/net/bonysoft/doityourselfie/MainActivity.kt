@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
         albumView.setListener(this)
 
         if (Hawk.contains(TOKEN_KEY)) {
-            onTokenReceived(TOKEN_KEY)
+            onTokenReceived(Hawk.get(TOKEN_KEY))
         } else {
             showLoggedOutUi()
             TokenManager.attachTo(this)
