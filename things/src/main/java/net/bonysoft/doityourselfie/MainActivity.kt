@@ -10,12 +10,15 @@ import android.view.KeyEvent
 import android.widget.ImageView
 import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
+import com.google.android.things.pio.Gpio
+import com.google.android.things.pio.PeripheralManager
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
 import timber.log.Timber
 
 class MainActivity : Activity() {
 
+    private lateinit var ledGpio: Gpio
     private lateinit var buttonInputDriver: ButtonInputDriver
 
     private lateinit var camera: SelfieCamera
@@ -34,9 +37,10 @@ class MainActivity : Activity() {
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
+        val logicState = if (BuildConfig.NC_BUTTON) Button.LogicState.PRESSED_WHEN_HIGH else Button.LogicState.PRESSED_WHEN_LOW
         buttonInputDriver = ButtonInputDriver(
             BoardDefaults.gpioForButton,
-            Button.LogicState.PRESSED_WHEN_LOW,
+            logicState,
             KeyEvent.KEYCODE_SPACE)
         buttonInputDriver.register()
 
@@ -54,10 +58,24 @@ class MainActivity : Activity() {
 
             onPictureTaken(imageBytes)
         })
+
+        val pioService = PeripheralManager.getInstance()
+        ledGpio = pioService.openGpio(BoardDefaults.gpioForLED)
+        ledGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_SPACE) {
+            ledGpio.value = true
+            return true
+        }
+
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_SPACE) {
+            ledGpio.value = false
             Timber.d("Button pressed")
             startShootingProcess()
             return true
@@ -73,6 +91,7 @@ class MainActivity : Activity() {
     override fun onStop() {
         buttonInputDriver.unregister()
         buttonInputDriver.close()
+        ledGpio.close()
         super.onStop()
     }
 
