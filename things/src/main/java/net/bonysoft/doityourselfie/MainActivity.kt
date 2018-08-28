@@ -1,14 +1,15 @@
 package net.bonysoft.doityourselfie
 
-import android.app.Activity
 import android.arch.persistence.room.Room
 import android.graphics.BitmapFactory
 import android.media.ImageReader
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
@@ -17,13 +18,20 @@ import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
+import com.orhanobut.hawk.Hawk
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
+import net.bonysoft.doityourselfie.communication.TokenManager
+import net.bonysoft.doityourselfie.communication.TokenReceiver
 import net.bonysoft.doityourselfie.queue.QueueDatabase
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class MainActivity : Activity() {
+class MainActivity : AppCompatActivity(), TokenReceiver {
+
+    companion object {
+        const val TOKEN_KEY = "authentication_token"
+    }
 
     private lateinit var ledGpio: Gpio
     private lateinit var buttonInputDriver: ButtonInputDriver
@@ -72,6 +80,17 @@ class MainActivity : Activity() {
         val pioService = PeripheralManager.getInstance()
         ledGpio = pioService.openGpio(BoardDefaults.gpioForLED)
         ledGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
+        if (Hawk.contains(TOKEN_KEY)) {
+            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
+            onTokenReceived(Hawk.get(TOKEN_KEY))
+        } else {
+            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+            TokenManager.attachTo(this)
+        }
+    }
+
+    override fun onTokenReceived(token: String) {
+        Hawk.put(TOKEN_KEY, token)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
