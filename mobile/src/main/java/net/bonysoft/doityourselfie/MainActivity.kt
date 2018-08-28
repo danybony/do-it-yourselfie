@@ -31,12 +31,18 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setStandAloneAuthentication()
+
         albumList.let {
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(this)
         }
 
         albumView.setListener(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         if (Hawk.contains(TOKEN_KEY)) {
             onTokenReceived(Hawk.get(TOKEN_KEY))
@@ -45,7 +51,6 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
             TokenManager.attachTo(this)
         }
     }
-
 
     override fun onTokenReceived(token: String) {
         loggedInUi.visibility = View.VISIBLE
