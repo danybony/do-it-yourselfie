@@ -77,9 +77,11 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             onPictureTaken(imageBytes)
         })
 
-        val pioService = PeripheralManager.getInstance()
-        ledGpio = pioService.openGpio(BoardDefaults.gpioForLED)
-        ledGpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
+        ledGpio = PeripheralManager.getInstance().openGpio(BoardDefaults.gpioForLED)
+            .apply {
+                setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW)
+            }
+
         if (Hawk.contains(TOKEN_KEY)) {
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
             onTokenReceived(Hawk.get(TOKEN_KEY))
