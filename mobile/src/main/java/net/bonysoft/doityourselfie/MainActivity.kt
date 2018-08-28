@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
         albumView.setListener(this)
 
         if (Hawk.contains(TOKEN_KEY)) {
-            onTokenReceived(TOKEN_KEY)
+            onTokenReceived(Hawk.get(TOKEN_KEY))
         } else {
             showLoggedOutUi()
             TokenManager.attachTo(this)
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
             showLoggedOutUi()
         }
 
-        photosAPI = PhotosAPI(application, token!!, BuildConfig.DEBUG)
+        photosAPI = PhotosAPI(application, token, BuildConfig.DEBUG)
         Hawk.put(TOKEN_KEY, token)
         albumName.setText("Test Album 001")
 
