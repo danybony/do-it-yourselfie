@@ -19,10 +19,6 @@ import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
 class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
 
-    companion object {
-        const val TOKEN_KEY = "authentication_token"
-    }
-
     private lateinit var photosAPI: PhotosAPI
 
     private val adapter by lazy { AlbumAdapter(this, this) }

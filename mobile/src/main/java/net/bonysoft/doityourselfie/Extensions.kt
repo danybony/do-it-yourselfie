@@ -8,7 +8,6 @@ import android.util.TypedValue.applyDimension
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import net.bonysoft.doityourselfie.photos.model.AlbumResponse
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
@@ -57,8 +56,6 @@ fun View.hide() {
 fun String.extractName() = this.split("/").last()
 
 const val TOKEN_KEY = "net.bonysoft.doityourselfie.TOKEN"
-
-fun token() = Hawk.get<String>(TOKEN_KEY)!!
 
 fun MainActivity.setStandAloneAuthentication() {
     if (BuildConfig.IS_STANDALONE) {

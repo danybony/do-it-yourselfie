@@ -8,15 +8,12 @@ import com.orhanobut.hawk.Hawk
 import net.bonysoft.doityourselfie.R
 
 import kotlinx.android.synthetic.main.activity_stand_alone_authentication.*
+import net.bonysoft.doityourselfie.TOKEN_KEY
 import net.bonysoft.doityourselfie.authentication.AuthenticationListener
 import net.bonysoft.doityourselfie.authentication.GoogleSignInAuthenticator
 import net.bonysoft.doityourselfie.communication.TokenSender
 
 class StandAloneAuthenticationActivity : AppCompatActivity(), AuthenticationListener {
-
-    companion object {
-        const val TOKEN_KEY = "authentication_token"
-    }
 
     private lateinit var authenticator: GoogleSignInAuthenticator<StandAloneAuthenticationActivity>
     private lateinit var tokenSender: TokenSender
