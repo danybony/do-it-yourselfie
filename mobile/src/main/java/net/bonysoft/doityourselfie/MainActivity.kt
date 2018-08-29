@@ -1,6 +1,7 @@
 package net.bonysoft.doityourselfie
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -14,14 +15,11 @@ import net.bonysoft.doityourselfie.communication.TokenManager
 import net.bonysoft.doityourselfie.communication.TokenReceiver
 import net.bonysoft.doityourselfie.photos.PhotosAPI
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.standalone.StandAloneAuthenticationActivity
 import net.bonysoft.doityourselfie.ui.AlbumAdapter
 import net.bonysoft.doityourselfie.ui.AlbumSelectedListener
 
 class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
-
-    companion object {
-        const val TOKEN_KEY = "authentication_token"
-    }
 
     private lateinit var photosAPI: PhotosAPI
 
@@ -31,12 +29,32 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setStandAloneAuthentication()
+
         albumList.let {
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(this)
         }
 
         albumView.setListener(this)
+    }
+
+    private fun setStandAloneAuthentication() {
+        if (BuildConfig.IS_STANDALONE) {
+            standAloneAuthentication.run {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    startActivity(Intent(this@MainActivity,
+                            StandAloneAuthenticationActivity::class.java))
+                }
+            }
+        } else {
+            standAloneAuthentication.visibility = View.GONE
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         if (Hawk.contains(TOKEN_KEY)) {
             onTokenReceived(Hawk.get(TOKEN_KEY))
@@ -45,7 +63,6 @@ class MainActivity : AppCompatActivity(), AlbumSelectedListener, TokenReceiver {
             TokenManager.attachTo(this)
         }
     }
-
 
     override fun onTokenReceived(token: String) {
         loggedInUi.visibility = View.VISIBLE

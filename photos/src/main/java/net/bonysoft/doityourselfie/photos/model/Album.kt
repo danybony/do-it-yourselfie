@@ -16,7 +16,7 @@ data class AlbumResponse(
         val id: String,
         val title: String,
         @Json(name = "isWriteable")
-        val writeable: String
+        val writeable: Boolean
 )
 
 @Parcelize
@@ -25,7 +25,7 @@ data class CompleteAlbum(
         val title: String,
         val productUrl: String,
         val coverPhotoBaseUrl: String,
-        val isWriteable: String?,
+        val isWriteable: Boolean?,
         val totalMediaItems: Int
 ) : Parcelable
 

@@ -8,6 +8,7 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.design.widget.Snackbar.LENGTH_INDEFINITE
 import android.support.design.widget.Snackbar.make
 import android.support.v4.app.ActivityCompat
@@ -16,6 +17,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.widget.Toast
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_photo_loading.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -60,7 +62,13 @@ class PhotoLoadingActivity : AppCompatActivity(), PhotoLoadingView {
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        photosAPI = PhotosAPI(application, token(), BuildConfig.DEBUG)
+        if (Hawk.contains(TOKEN_KEY)) {
+            photosAPI = PhotosAPI(application, Hawk.get(TOKEN_KEY), BuildConfig.DEBUG)
+        } else {
+            Snackbar.make(photoList, "Token not found", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(android.R.string.ok) { this@PhotoLoadingActivity.finish() }
+                    .show()
+        }
 
         photoList.let {
             it.layoutManager = GridLayoutManager(this, 4)
