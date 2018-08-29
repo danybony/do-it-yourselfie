@@ -56,16 +56,3 @@ fun View.hide() {
 fun String.extractName() = this.split("/").last()
 
 const val TOKEN_KEY = "net.bonysoft.doityourselfie.TOKEN"
-
-fun MainActivity.setStandAloneAuthentication() {
-    if (BuildConfig.IS_STANDALONE) {
-        standAloneAuthentication.run {
-            visibility = View.VISIBLE
-            setOnClickListener {
-                startActivity(Intent(this@setStandAloneAuthentication, StandAloneAuthenticationActivity::class.java))
-            }
-        }
-    } else {
-        standAloneAuthentication.visibility = View.GONE
-    }
-}
