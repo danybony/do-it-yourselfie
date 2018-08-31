@@ -28,6 +28,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "Boolean", "IS_STANDALONE", "true"
     }
 
     buildTypes {
@@ -66,7 +68,9 @@ androidExtensions {
 dependencies {
     def withoutV4 = { exclude group: 'com.android.support', module: 'support-v4' }
 
+    implementation project(":authentication")
     implementation project(":communication")
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1', withoutV4
     implementation 'com.android.support:support-v4:27.1.1'
@@ -81,6 +85,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "android.arch.lifecycle:runtime:1.1.1"
     implementation "android.arch.core:runtime:1.1.1"
+    implementation "android.arch.lifecycle:viewmodel:1.1.1"
+    implementation "android.arch.lifecycle:livedata-core:1.1.1"
+    implementation "com.google.dagger:dagger:2.16"
+
     implementation project(":secrets")
     implementation project(":photos")
 

@@ -19,7 +19,7 @@ class AlbumView @JvmOverloads constructor(
     private var album: AlbumResponse by Delegates.observable(EMPTY_ALBUM_RESPONSE) { _, _, new ->
         titleView.text = new.title
         productUrlView.text = new.productUrl
-        writeableView.text = new.writeable
+        writeableView.text = new.writeable.toString()
     }
 
     init {
