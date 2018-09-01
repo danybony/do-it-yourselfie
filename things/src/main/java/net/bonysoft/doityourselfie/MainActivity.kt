@@ -40,16 +40,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     private lateinit var cameraThread: HandlerThread
     private lateinit var cameraHandler: Handler
     private lateinit var picturesUploadQueue: PicturesUploadQueue
-    private val imageViews = ArrayList<ImageView>()
-    private var nextImageId = 0
+    private lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        imageViews.add(findViewById(R.id.imageTopLeft))
-        imageViews.add(findViewById(R.id.imageTopRight))
-        imageViews.add(findViewById(R.id.imageBottomLeft))
-        imageViews.add(findViewById(R.id.imageBottomRight))
+        imageView = findViewById(R.id.image)
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
@@ -150,14 +146,7 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
 
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) // TODO resize depending on the view
         runOnUiThread {
-            imageViews[nextImageId].setImageBitmap(bitmap)
-            nextImageId++
-            if (nextImageId >= 4) {
-                nextImageId = 0
-            } else {
-                Thread.sleep(3000)
-                camera.takePicture()
-            }
+            imageView.setImageBitmap(bitmap)
         }
     }
 
