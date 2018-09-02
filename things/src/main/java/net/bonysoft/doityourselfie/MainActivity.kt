@@ -12,7 +12,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.work.Constraints
 import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequest
+import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
@@ -25,7 +25,6 @@ import net.bonysoft.doityourselfie.communication.TokenManager
 import net.bonysoft.doityourselfie.communication.TokenReceiver
 import net.bonysoft.doityourselfie.queue.QueueDatabase
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), TokenReceiver {
 
@@ -100,11 +99,6 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onStart() {
-        super.onStart()
-        scheduleUploadWorker()
-    }
-
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_SPACE) {
             ledGpio.value = false
@@ -144,10 +138,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             }
         }.start()
 
-        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size) // TODO resize depending on the view
+        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         runOnUiThread {
             imageView.setImageBitmap(bitmap)
         }
+
+        scheduleUploadWorker()
     }
 
     private fun scheduleUploadWorker() {
@@ -155,11 +151,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val workRequest = PeriodicWorkRequest.Builder(PicturesUploadWorker::class.java, 1, TimeUnit.MINUTES)
+        val workRequest = OneTimeWorkRequest.Builder(PicturesUploadWorker::class.java)
             .setConstraints(uploadConstraints)
             .build()
 
         WorkManager.getInstance().enqueue(workRequest)
+        // TODO remove token and reattach listener in case of auth failure, to get an updated token
     }
 
 }
