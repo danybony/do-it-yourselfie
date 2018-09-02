@@ -150,12 +150,16 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val workerTag = "upload"
         val workRequest = OneTimeWorkRequest.Builder(PicturesUploadWorker::class.java)
             .setConstraints(uploadConstraints)
+            .addTag(workerTag)
             .build()
 
-        WorkManager.getInstance().enqueue(workRequest)
-        // TODO remove token and reattach listener in case of auth failure, to get an updated token
+        with(WorkManager.getInstance()) {
+            cancelAllWorkByTag("upload")
+            enqueue(workRequest)
+        }
     }
 
 }
