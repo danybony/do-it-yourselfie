@@ -32,7 +32,6 @@ internal class PhotosApiImpl(private val apiService: ApiService,
         }
     }
 
-    //imageTransformer.toByteArray(bitmap, fileName)
     internal fun uploadImage(albumId: String, fileName: String, bytes: ByteArray): Deferred<ImageUploadResult> {
         return async {
             val token = uploadApiService.uploadMedia(tokenBearer, fileName, bytes).await()
