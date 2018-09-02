@@ -80,13 +80,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         if (Hawk.contains(TOKEN_KEY)) {
             Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
             onTokenReceived(Hawk.get(TOKEN_KEY))
-        } else {
-            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-            TokenManager.attachTo(this)
         }
+        TokenManager.attachTo(this)
     }
 
     override fun onTokenReceived(token: String) {
+        Timber.d("New token received")
         Hawk.put(TOKEN_KEY, token)
     }
 
