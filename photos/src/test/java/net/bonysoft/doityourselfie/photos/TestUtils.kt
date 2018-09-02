@@ -1,5 +1,8 @@
 package net.bonysoft.doityourselfie.photos
 
+import com.squareup.moshi.Moshi
+import okhttp3.OkHttpClient
+import okhttp3.mockwebserver.MockWebServer
 import java.io.File
 
 object TestUtils {
@@ -9,6 +12,8 @@ object TestUtils {
     private const val POST_ALBUMS = "${BASE_PATH}post_albums.json"
     private const val LIST_PHOTOS = "${BASE_PATH}list_photos.json"
     private const val LIST_PHOTOS_2 = "${BASE_PATH}list_photos_2.json"
+
+    private val okHttpClient = OkHttpClient()
 
     fun fetchGetAlbumsJson() = fetchJsonByCompletePath(GET_ALBUMS)
 
@@ -22,4 +27,13 @@ object TestUtils {
         val file = File(javaClass.classLoader!!.getResource(filePath).path)
         return String(file.readBytes())
     }
+
+    fun okHttpClient() = okHttpClient
+
+    fun moshi() = Moshi.Builder().build()
+
+    fun mockWebServer(success: Boolean = true) =
+            MockWebServer().apply {
+                setDispatcher(PhotosDispatcher(success))
+            }
 }
