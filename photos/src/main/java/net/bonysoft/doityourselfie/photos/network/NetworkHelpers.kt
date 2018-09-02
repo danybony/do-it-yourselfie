@@ -19,6 +19,5 @@ internal fun createRetrofit(moshi: Moshi,
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .baseUrl(endpoint)
                 .client(client)
-                .build().let {
-                    it.create(ApiService::class.java)
-                }
+                .build()
+                .create(ApiService::class.java)
