@@ -36,4 +36,12 @@ class TestUtilsConsistencyTest {
                 .isNotBlank()
                 .isNotEmpty()
     }
+
+    @Test
+    fun batch_create_is_not_null() {
+        assertThat(TestUtils.fetchBatchCreateJson())
+                .isNotNull()
+                .isNotBlank()
+                .isNotEmpty()
+    }
 }

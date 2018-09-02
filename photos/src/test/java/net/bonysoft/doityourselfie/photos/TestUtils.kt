@@ -17,6 +17,8 @@ object TestUtils {
 
     fun fetchListPhotos2Json() = fetchJsonByCompletePath(LIST_PHOTOS_2)
 
+    fun fetchBatchCreateJson() = fetchJsonByCompletePath(BATCH_CREATE)
+
     private fun fetchJsonByCompletePath(filePath: String): String {
         val file = File(javaClass.classLoader!!.getResource(filePath).path)
         return String(file.readBytes())

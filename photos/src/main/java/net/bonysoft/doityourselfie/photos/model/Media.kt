@@ -1,5 +1,6 @@
 package net.bonysoft.doityourselfie.photos.model
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 internal data class SimpleMediaItem(val uploadToken: String)
@@ -12,11 +13,12 @@ internal data class NewMediaItem(val description: String,
 internal data class ImageUploadRequest(val albumId: String,
                                        val newMediaItems: Array<NewMediaItem>)
 
-data class Status(val code: Int,
+data class Status(val code: Int = 0,
                   val message: String)
 
 data class NewMediaItemResult(val uploadToken: String,
-                              val status: Status)
+                              val status: Status,
+                              val mediaItem: MediaItem)
 
 @Suppress("ArrayInDataClass")
 data class ImageUploadResult(val newMediaItemResults: Array<NewMediaItemResult>)
@@ -30,13 +32,16 @@ data class Photo(val cameraMake: String,
 data class MediaMetaData(val creationTime: String,
                          val width: String,
                          val height: String,
-                         val photo: Photo)
+                         val photo: Photo?)
 
 data class MediaItem(val id: String,
+                     val description: String?,
                      val productUrl: String,
                      val baseUrl: String,
                      val mimeType: String,
-                     val mediaMetadata: MediaMetaData)
+                     val mediaMetadata: MediaMetaData,
+                     @Json(name = "filename")
+                     val fileName: String)
 
 @Suppress("ArrayInDataClass")
 data class PhotoListResponse(val mediaItems: Array<MediaItem>?,

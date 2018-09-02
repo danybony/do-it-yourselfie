@@ -7,6 +7,8 @@ internal const val GET_ALBUMS = "${BASE_PATH}get_albums.json"
 internal const val POST_ALBUMS = "${BASE_PATH}post_albums.json"
 internal const val LIST_PHOTOS = "${BASE_PATH}list_photos.json"
 internal const val LIST_PHOTOS_2 = "${BASE_PATH}list_photos_2.json"
+internal const val BATCH_CREATE = "${BASE_PATH}batch_create.json"
+internal const val UPLOAD_TOKEN = "uploadToken"
 
 /**
  * Albums
@@ -85,3 +87,7 @@ internal val expectedAlbums = listOf(album001_001, album001_002, album001_003, a
 internal const val ALBUM_008_ID = "AGj1epU_sPGiLToxukVK9clQYxZf3h1N6eqjGyq90gzv9vmK3CTU"
 internal const val ALBUM_008_TITLE = "Test Album 008"
 internal const val ALBUM_008_URL = "https://photos.google.com/lr/album/AGj1epU_sPGiLToxukVK9clQYxZf3h1N6eqjGyq90gzv9vmK3CTU"
+
+//Photo upload
+internal const val PHOTO_ALBUM_ID = "mediaItemId"
+internal const val PHOTO_NAME = "IMG_20180828_122428456.jpg"

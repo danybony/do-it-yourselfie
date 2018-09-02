@@ -1,16 +1,12 @@
 package net.bonysoft.doityourselfie.photos.internal
 
 import kotlinx.coroutines.experimental.runBlocking
-import net.bonysoft.doityourselfie.photos.ALBUM_008_ID
-import net.bonysoft.doityourselfie.photos.ALBUM_008_TITLE
-import net.bonysoft.doityourselfie.photos.ALBUM_008_URL
+import net.bonysoft.doityourselfie.photos.*
 import net.bonysoft.doityourselfie.photos.TestUtils.mockWebServer
 import net.bonysoft.doityourselfie.photos.TestUtils.moshi
 import net.bonysoft.doityourselfie.photos.TestUtils.okHttpClient
-import net.bonysoft.doityourselfie.photos.expectedAlbums
 import net.bonysoft.doityourselfie.photos.network.UploadApiService
 import net.bonysoft.doityourselfie.photos.network.createRetrofit
-import net.bonysoft.doityourselfie.photos.utils.ImageTransformer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -19,7 +15,6 @@ import org.junit.Test
 class PhotosApiImplTest {
 
     private val mockWebServer = mockWebServer()
-    private val imageTransformer = ImageTransformer()
     private lateinit var photosApi: PhotosApiImpl
 
     @Before
@@ -27,7 +22,7 @@ class PhotosApiImplTest {
         val baseUrl = mockWebServer.url("/").toString()
         val apiService = createRetrofit(moshi(), okHttpClient(), baseUrl)
         val uploadService = UploadApiService(okHttpClient(), baseUrl)
-        photosApi = PhotosApiImpl(apiService, uploadService, imageTransformer, "")
+        photosApi = PhotosApiImpl(apiService, uploadService, "")
     }
 
     @Test
@@ -59,6 +54,22 @@ class PhotosApiImplTest {
         //And vice-versa
         val thisAlsoShouldBe0 = expectedAlbums.filterNot { albumResponse.contains(it) }.count()
         assertThat(thisAlsoShouldBe0).isEqualTo(0)
+    }
+
+    @Test
+    fun photo_is_uploaded_correctly() {
+        val photoResponse = runBlocking {
+            photosApi.uploadImage(PHOTO_ALBUM_ID, PHOTO_NAME, ByteArray(0)).await()
+        }
+
+        assertThat(photoResponse.newMediaItemResults.size).isEqualTo(1)
+
+        val item = photoResponse.newMediaItemResults.firstOrNull()
+        assertThat(item).isNotNull
+        assertThat(item!!.uploadToken).isEqualTo(UPLOAD_TOKEN)
+        assertThat(item.status.message).isEqualTo("OK")
+        assertThat(item.mediaItem.id).isEqualTo(PHOTO_ALBUM_ID)
+        assertThat(item.mediaItem.description).isNotNull().isEqualTo(PHOTO_NAME)
     }
 
     @After
