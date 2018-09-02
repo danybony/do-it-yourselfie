@@ -1,5 +1,6 @@
 package net.bonysoft.doityourselfie
 
+import android.arch.lifecycle.Observer
 import android.arch.persistence.room.Room
 import android.graphics.BitmapFactory
 import android.media.ImageReader
@@ -9,16 +10,18 @@ import android.os.HandlerThread
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
+import androidx.work.State
 import androidx.work.WorkManager
 import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
+import com.google.android.things.contrib.driver.rainbowhat.RainbowHat
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.orhanobut.hawk.Hawk
+import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
 import net.bonysoft.doityourselfie.communication.TokenManager
@@ -78,16 +81,17 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             }
 
         if (Hawk.contains(TOKEN_KEY)) {
-            Toast.makeText(this, "Logged in", Toast.LENGTH_SHORT).show()
             onTokenReceived(Hawk.get(TOKEN_KEY))
-        } else {
-            Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-            TokenManager.attachTo(this)
         }
+        TokenManager.attachTo(this)
     }
 
     override fun onTokenReceived(token: String) {
+        Timber.d("New token received")
         Hawk.put(TOKEN_KEY, token)
+        launch {
+            scheduleUploadWorker()
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -131,19 +135,19 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         if (imageBytes == null) {
             return
         }
-        Thread {
+        launch {
             val storedPath = saveImageToFile(imageBytes)
             if (storedPath != null) {
                 picturesUploadQueue.put(storedPath)
             }
-        }.start()
+            displayQueueSize()
+            scheduleUploadWorker()
+        }
 
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         runOnUiThread {
             imageView.setImageBitmap(bitmap)
         }
-
-        scheduleUploadWorker()
     }
 
     private fun scheduleUploadWorker() {
@@ -151,12 +155,44 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val workerTag = "upload"
         val workRequest = OneTimeWorkRequest.Builder(PicturesUploadWorker::class.java)
             .setConstraints(uploadConstraints)
+            .addTag(workerTag)
             .build()
 
-        WorkManager.getInstance().enqueue(workRequest)
-        // TODO remove token and reattach listener in case of auth failure, to get an updated token
+        with(WorkManager.getInstance()) {
+            cancelAllWorkByTag(workerTag)
+            enqueue(workRequest)
+            getStatusById(workRequest.id).observe(this@MainActivity, Observer { status ->
+                if (status != null) {
+                    when {
+                        status.state == State.RUNNING -> display("Sync")
+                        status.state == State.CANCELLED -> Timber.d("Worker canceled")
+                        status.state == State.FAILED -> display(status.outputData.getString(KEY_FAILURE_REASON) ?: "Err?")
+                        status.state.isFinished -> {
+                            Timber.d("Worker completed")
+                            displayQueueSize()
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    private fun displayQueueSize() {
+        launch {
+            display(picturesUploadQueue.picturesToUpload().size.toString())
+        }
+    }
+
+    private fun display(text: String) {
+        with(RainbowHat.openDisplay()) {
+            setBrightness(10)
+            display(text)
+            setEnabled(true)
+            close()
+        }
     }
 
 }
