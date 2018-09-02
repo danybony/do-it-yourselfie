@@ -3,16 +3,20 @@
   package="net.bonysoft.doityourselfie">
 
   <uses-feature android:name="android.hardware.camera" />
+
+  <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="com.google.android.things.permission.MANAGE_INPUT_DRIVERS" />
   <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
 
-  <application android:allowBackup="false"
-    android:name=".DiyApp">
+  <application
+    android:name=".DiyApp"
+    android:allowBackup="false">
     <uses-library android:name="com.google.android.things" />
 
-    <activity android:name=".MainActivity"
+    <activity
+      android:name=".MainActivity"
       android:hardwareAccelerated="true"
       android:theme="@style/AppTheme">
       <intent-filter>

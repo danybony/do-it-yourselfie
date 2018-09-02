@@ -10,11 +10,15 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.novoda.build-properties'
 
 buildProperties {
     hardwareConfig {
         using project.file('hardware.properties')
+    }
+    debugSigningConfig {
+        using rootProject.file('team-props/debugSigning.properties')
     }
 }
 
@@ -31,27 +35,65 @@ android {
         // These config flags are loaded from hardware.properties, if present
         buildConfigBoolean 'USE_RAINBOW_HAT', buildProperties.hardwareConfig['use_rainbow_hat'].or(false)
         buildConfigBoolean 'NC_BUTTON', buildProperties.hardwareConfig['nc_button'].or(false)
+        buildConfigString 'ALBUM_ID', buildProperties.hardwareConfig['album_id']
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    signingConfigs.all { signingConfig ->
+        signingConfig.ext.from = { buildProperties ->
+            signingConfig.storeFile teamPropsFile(buildProperties['storeFile'].string)
+            signingConfig.storePassword buildProperties['storePassword'].string
+            signingConfig.keyAlias buildProperties['keyAlias'].string
+            signingConfig.keyPassword buildProperties['keyPassword'].string
+        }
+    }
+
+    signingConfigs {
+        debug {
+            from buildProperties.debugSigningConfig
+        }
+    }
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }
 
 dependencies {
+    def withoutV4 = { exclude group: 'com.android.support', module: 'support-v4' }
+
+    implementation project(":communication")
+    implementation project(":secrets")
+    implementation project(":photos")
     implementation project(":camera")
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    implementation 'com.google.firebase:firebase-core:16.0.0'
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2', withoutV4
+    implementation 'com.android.support:appcompat-v7:27.1.1', withoutV4
+    implementation 'com.android.support:support-v4:27.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly 'com.google.android.things:androidthings:1.0'
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4"
+
+    def room_version = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
+    implementation "android.arch.work:work-runtime:1.0.0-alpha07"
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'com.google.android.things.contrib:driver-button:1.0'
+    implementation "com.orhanobut:hawk:2.0.1"
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2', withoutV4
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 

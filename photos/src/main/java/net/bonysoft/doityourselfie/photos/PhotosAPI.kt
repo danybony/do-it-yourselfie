@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.di.createLibraryComponent
-import net.bonysoft.doityourselfie.photos.model.*
+import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.model.ImageUploadResult
+import net.bonysoft.doityourselfie.photos.model.MediaItem
 import net.bonysoft.doityourselfie.photos.utils.asImageUploadRequestWith
 import net.bonysoft.doityourselfie.photos.utils.toAlbumRequest
 
@@ -44,9 +46,13 @@ class PhotosAPI(application: Application,
             }
 
     fun uploadImage(album: CompleteAlbum, fileName: String, bitmap: Bitmap): Deferred<ImageUploadResult> {
+        return uploadImage(album.id, fileName, bitmap)
+    }
+
+    fun uploadImage(albumId: String, fileName: String, bitmap: Bitmap): Deferred<ImageUploadResult> {
         return async {
             val token = uploadApiService.uploadMedia(tokenBearer, fileName, imageTransformer.toByteArray(bitmap, fileName)).await()
-            apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(album.id, fileName)).await()
+            apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(albumId, fileName)).await()
         }
     }
 
