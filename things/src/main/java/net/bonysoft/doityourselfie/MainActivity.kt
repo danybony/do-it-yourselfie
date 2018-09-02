@@ -10,7 +10,6 @@ import android.os.HandlerThread
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
@@ -163,7 +162,7 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             .build()
 
         with(WorkManager.getInstance()) {
-            cancelAllWorkByTag("upload")
+            cancelAllWorkByTag(workerTag)
             enqueue(workRequest)
             getStatusById(workRequest.id).observe(this@MainActivity, Observer { status ->
                 if (status != null) {
