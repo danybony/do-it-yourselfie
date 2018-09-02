@@ -72,6 +72,27 @@ class PhotosApiImplTest {
         assertThat(item.mediaItem.description).isNotNull().isEqualTo(PHOTO_NAME)
     }
 
+    @Test
+    fun photo_list_is_fetched_correctly() {
+        val photoList = runBlocking {
+            photosApi.fetchPicturesInAlbum("").await()
+        }
+
+        assertThat(photoList.size).isEqualTo(expectedPhotos.size)
+
+        //Checks that expectedPhotos contains all the items contained in photoList
+        val photoListTitles = photoList.map { it.description }
+        val expectedPhotosTitle = expectedPhotos.map { it.description }
+
+        assertThat(
+                photoListTitles.filterNot { expectedPhotosTitle.contains(it) }.count()
+        ).isEqualTo(0)
+
+        assertThat(
+                expectedPhotosTitle.filterNot { photoListTitles.contains(it) }.count()
+        ).isEqualTo(0)
+    }
+
     @After
     fun tearDown() {
         mockWebServer.shutdown()

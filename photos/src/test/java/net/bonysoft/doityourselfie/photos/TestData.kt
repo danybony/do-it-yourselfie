@@ -1,6 +1,9 @@
 package net.bonysoft.doityourselfie.photos
 
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
+import net.bonysoft.doityourselfie.photos.model.MediaItem
+import net.bonysoft.doityourselfie.photos.model.MediaMetaData
+import net.bonysoft.doityourselfie.photos.model.Photo
 
 private const val BASE_PATH = "json/"
 internal const val GET_ALBUMS = "${BASE_PATH}get_albums.json"
@@ -91,3 +94,57 @@ internal const val ALBUM_008_URL = "https://photos.google.com/lr/album/AGj1epU_s
 //Photo upload
 internal const val PHOTO_ALBUM_ID = "mediaItemId"
 internal const val PHOTO_NAME = "IMG_20180828_122428456.jpg"
+
+//Photo list
+internal val PHOTO_001_METADATA = MediaMetaData(
+        creationTime = "2018-07-27T21:07:47Z",
+        width = "4032",
+        height = "3024",
+        photo = Photo()
+)
+
+internal val PHOTO_001 = MediaItem(
+        id = "photo_001",
+        description = "IMG_20180722_221619954.jpg",
+        productUrl = "https://photos.google.com/lr/album/photo_001",
+        baseUrl = "https://lh3.googleusercontent.com/lr/photo_001",
+        mimeType = "image/jpeg",
+        mediaMetadata = PHOTO_001_METADATA,
+        fileName = "2018-07-27.jpg"
+)
+
+internal val PHOTO_002_METADATA = MediaMetaData(
+        creationTime = "2018-07-27T22:16:47Z",
+        width = "4032",
+        height = "3024",
+        photo = Photo()
+)
+
+internal val PHOTO_002 = MediaItem(
+        id = "photo_002",
+        description = "IMG_20180727_181525173.jpg",
+        productUrl = "https://photos.google.com/lr/album/photo_002",
+        baseUrl = "https://lh3.googleusercontent.com/lr/photo_002",
+        mimeType = "image/jpeg",
+        mediaMetadata = PHOTO_002_METADATA,
+        fileName = "2018-07-27.jpg"
+)
+
+internal val PHOTO_003_METADATA = MediaMetaData(
+        creationTime = "2018-08-28T10:15:56Z",
+        width = "4032",
+        height = "3024",
+        photo = Photo()
+)
+
+internal val PHOTO_003 = MediaItem(
+        id = "photo_003",
+        description = "IMG_20180828_121333490.jpg",
+        productUrl = "https://photos.google.com/lr/album/photo_003",
+        baseUrl = "https://lh3.googleusercontent.com/lr/photo_003",
+        mimeType = "image/jpeg",
+        mediaMetadata = PHOTO_003_METADATA,
+        fileName = "2018-08-28.jpg"
+)
+
+internal val expectedPhotos = listOf(PHOTO_001, PHOTO_002, PHOTO_003)

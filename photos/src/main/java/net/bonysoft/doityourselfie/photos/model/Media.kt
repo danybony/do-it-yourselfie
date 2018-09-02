@@ -23,11 +23,11 @@ data class NewMediaItemResult(val uploadToken: String,
 @Suppress("ArrayInDataClass")
 data class ImageUploadResult(val newMediaItemResults: Array<NewMediaItemResult>)
 
-data class Photo(val cameraMake: String,
-                 val cameraModel: String,
-                 val focalLength: Float,
-                 val apertureFNumber: Float,
-                 val isoEquivalent: Int)
+data class Photo(val cameraMake: String = "",
+                 val cameraModel: String = "",
+                 val focalLength: Float = 0f,
+                 val apertureFNumber: Float = 0f,
+                 val isoEquivalent: Int = 0)
 
 data class MediaMetaData(val creationTime: String,
                          val width: String,

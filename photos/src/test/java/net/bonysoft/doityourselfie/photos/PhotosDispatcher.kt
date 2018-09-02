@@ -2,8 +2,9 @@ package net.bonysoft.doityourselfie.photos
 
 import net.bonysoft.doityourselfie.photos.TestUtils.fetchBatchCreateJson
 import net.bonysoft.doityourselfie.photos.TestUtils.fetchGetAlbumsJson
-import net.bonysoft.doityourselfie.photos.TestUtils.fetchListPhotos2Json
+import net.bonysoft.doityourselfie.photos.TestUtils.fetchListPhotosJson
 import net.bonysoft.doityourselfie.photos.TestUtils.fetchPostAlbumsJson
+import net.bonysoft.doityourselfie.photos.utils.clean
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
@@ -14,7 +15,7 @@ class PhotosDispatcher(private val success: Boolean = true) : Dispatcher() {
         private const val POST = "POST"
         private const val ALBUMS = "/albums"
         private const val CREATE_MEDIA_LINK = "/mediaItems:batchCreate"
-        private const val LIST_PHOTOS = "./mediaItems:search"
+        private const val LIST_PHOTOS = "/mediaItems:search"
         private const val UPLOADS = "/uploads"
     }
 
@@ -31,16 +32,16 @@ class PhotosDispatcher(private val success: Boolean = true) : Dispatcher() {
             }
 
     private fun dispatchSuccess(request: RecordedRequest?): MockResponse =
-            when (request?.path) {
+            when (request?.path.clean()) {
                 ALBUMS -> responseWith(albumResponse(request))
                 CREATE_MEDIA_LINK -> responseWith(fetchBatchCreateJson())
-                LIST_PHOTOS -> responseWith(fetchListPhotos2Json())
+                LIST_PHOTOS -> responseWith(fetchListPhotosJson())
                 UPLOADS -> responseWith(UPLOAD_TOKEN)
                 else -> failResponse
             }
 
-    private fun albumResponse(request: RecordedRequest) =
-            if (request.method == POST) {
+    private fun albumResponse(request: RecordedRequest?) =
+            if (request?.method == POST) {
                 fetchPostAlbumsJson()
             } else {
                 fetchGetAlbumsJson()

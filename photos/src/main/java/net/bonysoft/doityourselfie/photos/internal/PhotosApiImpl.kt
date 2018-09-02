@@ -4,6 +4,7 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import net.bonysoft.doityourselfie.photos.model.CompleteAlbum
 import net.bonysoft.doityourselfie.photos.model.ImageUploadResult
+import net.bonysoft.doityourselfie.photos.model.MediaItem
 import net.bonysoft.doityourselfie.photos.network.ApiService
 import net.bonysoft.doityourselfie.photos.network.UploadApiService
 import net.bonysoft.doityourselfie.photos.utils.asImageUploadRequestWith
@@ -36,6 +37,22 @@ internal class PhotosApiImpl(private val apiService: ApiService,
         return async {
             val token = uploadApiService.uploadMedia(tokenBearer, fileName, bytes).await()
             apiService.createMediaLink(tokenBearer, token.asImageUploadRequestWith(albumId, fileName)).await()
+        }
+    }
+
+    internal fun fetchPicturesInAlbum(albumId: String, pageSize: Int = 100): Deferred<ArrayList<MediaItem>> {
+        return async {
+            val items = arrayListOf<MediaItem>()
+            var nextPageToken: String? = null
+
+            do {
+                val page = apiService.listPicturesInAlbum(tokenBearer, albumId, pageSize, nextPageToken).await()
+                nextPageToken = nextPageToken.replaceWith(page.nextPageToken)
+                if (page.mediaItems != null) {
+                    items.addAll(page.mediaItems)
+                }
+            } while (nextPageToken != null && nextPageToken.isNotEmpty())
+            return@async items
         }
     }
 }
