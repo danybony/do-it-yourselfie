@@ -1,13 +1,13 @@
 package net.bonysoft.doityourselfie.photos.internal
 
-import android.telephony.PhoneNumberFormattingTextWatcher
-import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.experimental.runBlocking
+import net.bonysoft.doityourselfie.photos.ALBUM_008_ID
+import net.bonysoft.doityourselfie.photos.ALBUM_008_TITLE
+import net.bonysoft.doityourselfie.photos.ALBUM_008_URL
 import net.bonysoft.doityourselfie.photos.TestUtils.mockWebServer
 import net.bonysoft.doityourselfie.photos.TestUtils.moshi
 import net.bonysoft.doityourselfie.photos.TestUtils.okHttpClient
-import net.bonysoft.doityourselfie.photos.model.Album
-import net.bonysoft.doityourselfie.photos.model.AlbumRequest
+import net.bonysoft.doityourselfie.photos.expectedAlbums
 import net.bonysoft.doityourselfie.photos.network.UploadApiService
 import net.bonysoft.doityourselfie.photos.network.createRetrofit
 import net.bonysoft.doityourselfie.photos.utils.ImageTransformer
@@ -17,13 +17,6 @@ import org.junit.Before
 import org.junit.Test
 
 class PhotosApiImplTest {
-
-    companion object {
-        private const val ALBUM_ID = "AGj1epU_sPGiLToxukVK9clQYxZf3h1N6eqjGyq90gzv9vmK3CTU"
-        private const val ALBUM_TITLE = "Test Album 008"
-        private const val ALBUM_URL =
-                "https://photos.google.com/lr/album/AGj1epU_sPGiLToxukVK9clQYxZf3h1N6eqjGyq90gzv9vmK3CTU"
-    }
 
     private val mockWebServer = mockWebServer()
     private val imageTransformer = ImageTransformer()
@@ -39,15 +32,33 @@ class PhotosApiImplTest {
 
     @Test
     fun album_is_created_correctly() {
-        runBlocking {
-            val albumResponse = photosApi.createAlbum(ALBUM_TITLE).await()
-            with(albumResponse) {
-                assertThat(title).isEqualToIgnoringCase(ALBUM_TITLE)
-                assertThat(id).isEqualTo(ALBUM_ID)
-                assertThat(productUrl).isEqualTo(ALBUM_URL)
-                assertThat(writeable).isFalse()
-            }
+        val albumResponse = runBlocking {
+            photosApi.createAlbum(ALBUM_008_TITLE).await()
         }
+
+        with(albumResponse) {
+            assertThat(title).isEqualToIgnoringCase(ALBUM_008_TITLE)
+            assertThat(id).isEqualTo(ALBUM_008_ID)
+            assertThat(productUrl).isEqualTo(ALBUM_008_URL)
+            assertThat(writeable).isFalse()
+        }
+    }
+
+    @Test
+    fun albums_are_fetched_correctly() {
+        val albumResponse = runBlocking {
+            photosApi.fetchAlbums().await()
+        }
+
+        assertThat(albumResponse.size).isEqualTo(expectedAlbums.size)
+
+        //Checks that expectedAlbums contains all the items contained in albumResponse
+        val thisShouldBe0 = albumResponse.filterNot { expectedAlbums.contains(it) }.count()
+        assertThat(thisShouldBe0).isEqualTo(0)
+
+        //And vice-versa
+        val thisAlsoShouldBe0 = expectedAlbums.filterNot { albumResponse.contains(it) }.count()
+        assertThat(thisAlsoShouldBe0).isEqualTo(0)
     }
 
     @After
