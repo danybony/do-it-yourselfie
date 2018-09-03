@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import android.widget.ImageView
+import android.view.View
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
@@ -21,6 +21,8 @@ import com.google.android.things.contrib.driver.rainbowhat.RainbowHat
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.orhanobut.hawk.Hawk
+import io.github.krtkush.lineartimer.LinearTimer
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
@@ -42,12 +44,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     private lateinit var cameraThread: HandlerThread
     private lateinit var cameraHandler: Handler
     private lateinit var picturesUploadQueue: PicturesUploadQueue
-    private lateinit var imageView: ImageView
+
+    private var countdownRunning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        imageView = findViewById(R.id.image)
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
@@ -115,7 +117,36 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     }
 
     private fun startShootingProcess() {
-        camera.takePicture()
+        if (countdownRunning) {
+            return
+        }
+        countdownRunning = true
+
+        val timerDuration: Long = 3000
+        val linearTimer = LinearTimer.Builder()
+            .linearTimerView(progressCountdown)
+            .duration(timerDuration)
+            .timerListener(object : LinearTimer.TimerListener {
+                override fun onTimerReset() {
+                    // no-op
+                }
+
+                override fun animationComplete() {
+                    progressCountdown.visibility = View.GONE
+                    countdown.visibility = View.GONE
+                    camera.takePicture()
+                    countdownRunning = false
+                }
+
+                override fun timerTick(tickUpdateInMillis: Long) {
+                    countdown.text = (((timerDuration - tickUpdateInMillis) / 1000) + 1).toString()
+                }
+            })
+            .build()
+
+        progressCountdown.visibility = View.VISIBLE
+        countdown.visibility = View.VISIBLE
+        linearTimer.startTimer()
     }
 
     override fun onStop() {
@@ -146,7 +177,7 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
 
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
         runOnUiThread {
-            imageView.setImageBitmap(bitmap)
+            image.setImageBitmap(bitmap)
         }
     }
 

@@ -6,4 +6,10 @@
     <item name="android:windowBackground">@color/windowBackground</item>
   </style>
 
+  <style name="CountdownText" parent="Base.TextAppearance.AppCompat.Large">
+    <item name="android:textColor">@color/countdownText</item>
+    <item name="android:fontFamily">cursive</item>
+    <item name="android:textSize">72sp</item>
+  </style>
+
 </resources>

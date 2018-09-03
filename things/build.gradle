@@ -81,6 +81,7 @@ dependencies {
     compileOnly 'com.google.android.things:androidthings:1.0'
     implementation 'com.google.android.things.contrib:driver-rainbowhat:1.0'
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.github.krtkush:LinearTimer:v2.1.1'
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.23.4"

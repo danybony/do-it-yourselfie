@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="net.bonysoft.doityourselfie">
 
   <uses-feature android:name="android.hardware.camera" />
@@ -12,7 +13,8 @@
 
   <application
     android:name=".DiyApp"
-    android:allowBackup="false">
+    android:allowBackup="false"
+    tools:replace="android:allowBackup">
     <uses-library android:name="com.google.android.things" />
 
     <activity

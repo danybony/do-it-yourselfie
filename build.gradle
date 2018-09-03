@@ -27,7 +27,7 @@ subprojects {
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'com.android.support') {
                 details.useVersion "27.1.1"
-            } else if(details.requested.group == 'android.arch.lifecycle') {
+            } else if (details.requested.group == 'android.arch.lifecycle') {
                 details.useVersion "1.1.1"
             }
         }
