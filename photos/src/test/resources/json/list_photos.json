@@ -1,0 +1,49 @@
+{
+  "mediaItems": [
+    {
+      "id": "photo_001",
+      "description": "IMG_20180722_221619954.jpg",
+      "productUrl": "https://photos.google.com/lr/album/photo_001",
+      "baseUrl": "https://lh3.googleusercontent.com/lr/photo_001",
+      "mimeType": "image/jpeg",
+      "mediaMetadata": {
+        "creationTime": "2018-07-27T21:07:47Z",
+        "width": "4032",
+        "height": "3024",
+        "photo": {
+        }
+      },
+      "filename": "2018-07-27.jpg"
+    },
+    {
+      "id": "photo_002",
+      "description": "IMG_20180727_181525173.jpg",
+      "productUrl": "https://photos.google.com/lr/album/photo_002",
+      "baseUrl": "https://lh3.googleusercontent.com/lr/photo_002",
+      "mimeType": "image/jpeg",
+      "mediaMetadata": {
+        "creationTime": "2018-07-27T22:16:47Z",
+        "width": "4032",
+        "height": "3024",
+        "photo": {
+        }
+      },
+      "filename": "2018-07-27.jpg"
+    },
+    {
+      "id": "photo_003",
+      "description": "IMG_20180828_121333490.jpg",
+      "productUrl": "https://photos.google.com/lr/album/photo_003",
+      "baseUrl": "https://lh3.googleusercontent.com/lr/photo_003",
+      "mimeType": "image/jpeg",
+      "mediaMetadata": {
+        "creationTime": "2018-08-28T10:15:56Z",
+        "width": "4032",
+        "height": "3024",
+        "photo": {
+        }
+      },
+      "filename": "2018-08-28.jpg"
+    }
+  ]
+}

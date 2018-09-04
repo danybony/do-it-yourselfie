@@ -26,7 +26,7 @@ data class CompleteAlbum(
         val productUrl: String,
         val coverPhotoBaseUrl: String,
         val isWriteable: Boolean?,
-        val totalMediaItems: Int
+        val totalMediaItems: Int = 0
 ) : Parcelable
 
 @Suppress("ArrayInDataClass")

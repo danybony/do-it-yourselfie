@@ -1,0 +1,22 @@
+{
+  "newMediaItemResults": [
+    {
+      "uploadToken": "uploadToken",
+      "status": {
+        "message": "OK"
+      },
+      "mediaItem": {
+        "id": "mediaItemId",
+        "description": "IMG_20180828_122428456.jpg",
+        "productUrl": "https://photos.google.com/lr/album/mediaItemId",
+        "mimeType": "image/jpeg",
+        "mediaMetadata": {
+          "creationTime": "2018-08-28T10:25:02Z",
+          "width": "4032",
+          "height": "3024"
+        },
+        "filename": "2018-08-28.jpg"
+      }
+    }
+  ]
+}
