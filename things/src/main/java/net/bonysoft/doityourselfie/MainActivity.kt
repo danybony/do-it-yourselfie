@@ -17,12 +17,16 @@ import androidx.work.State
 import androidx.work.WorkManager
 import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
+import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.orhanobut.hawk.Hawk
 import io.github.krtkush.lineartimer.LinearTimer
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
@@ -39,11 +43,13 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
 
     private lateinit var ledGpio: Gpio
     private lateinit var buttonInputDriver: ButtonInputDriver
+    private lateinit var display: AlphanumericDisplay
 
     private lateinit var camera: SelfieCamera
     private lateinit var cameraThread: HandlerThread
     private lateinit var cameraHandler: Handler
     private lateinit var picturesUploadQueue: PicturesUploadQueue
+    private var hideImageJob: Job? = null
 
     private var countdownRunning = false
 
@@ -59,6 +65,11 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             logicState,
             KeyEvent.KEYCODE_SPACE)
         buttonInputDriver.register()
+
+        display = RainbowHat.openDisplay().apply {
+            setBrightness(10)
+            setEnabled(true)
+        }
 
         picturesUploadQueue = PicturesUploadQueue(Room.databaseBuilder(applicationContext, QueueDatabase::class.java, "pictures_queue").build())
 
@@ -132,10 +143,10 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
                 }
 
                 override fun animationComplete() {
-                    progressCountdown.visibility = View.GONE
-                    countdown.visibility = View.GONE
-                    camera.takePicture()
+                    progressCountdown.hide()
+                    countdown.hide()
                     countdownRunning = false
+                    camera.takePicture()
                 }
 
                 override fun timerTick(tickUpdateInMillis: Long) {
@@ -144,8 +155,11 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             })
             .build()
 
-        progressCountdown.visibility = View.VISIBLE
-        countdown.visibility = View.VISIBLE
+        hideImageJob?.cancel()
+        countdown.text = "3"
+        image.hide()
+        countdown.show()
+        progressCountdown.show()
         linearTimer.startTimer()
     }
 
@@ -153,6 +167,7 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         buttonInputDriver.unregister()
         buttonInputDriver.close()
         ledGpio.close()
+        display.close()
         super.onStop()
     }
 
@@ -176,8 +191,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         }
 
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-        runOnUiThread {
+
+        hideImageJob = launch(UI) {
             image.setImageBitmap(bitmap)
+            image.show()
+            delay(5000L)
+            image.hide()
         }
     }
 
@@ -218,12 +237,14 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     }
 
     private fun display(text: String) {
-        with(RainbowHat.openDisplay()) {
-            setBrightness(10)
-            display(text)
-            setEnabled(true)
-            close()
-        }
+        display.display(text)
     }
+}
 
+private fun View.hide() {
+    visibility = View.GONE
+}
+
+private fun View.show() {
+    visibility = View.VISIBLE
 }
