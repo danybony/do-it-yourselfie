@@ -27,6 +27,7 @@ private constructor() {
     private var captureSession: CameraCaptureSession? = null
     private var imageReader: ImageReader? = null
     private var cameraCharacteristics: CameraCharacteristics? = null
+    private var handler: Handler? = null
 
 
     private val stateCallback = object : CameraDevice.StateCallback() {
@@ -97,6 +98,8 @@ private constructor() {
     fun initializeCamera(context: Context,
                          backgroundHandler: Handler,
                          imageAvailableListener: ImageReader.OnImageAvailableListener) {
+        handler = backgroundHandler
+
         // Discover the camera instance
         val manager = context.getSystemService(CAMERA_SERVICE) as CameraManager
         var camIds = arrayOf<String>()
@@ -147,7 +150,7 @@ private constructor() {
         try {
             cameraDevice!!.createCaptureSession(
                 listOf<Surface>(imageReader!!.surface),
-                sessionCallback, null)
+                sessionCallback, handler)
         } catch (cae: CameraAccessException) {
             Timber.e(cae, "access exception while preparing pic")
         }
@@ -174,7 +177,7 @@ private constructor() {
             }
 
             Timber.d("Session initialized.")
-            captureSession!!.capture(captureBuilder.build(), captureCallback, null)
+            captureSession!!.capture(captureBuilder.build(), captureCallback, handler)
         } catch (cae: CameraAccessException) {
             Timber.e(cae, "camera capture exception")
         }

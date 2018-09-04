@@ -33,7 +33,7 @@ private fun getOutputMediaFile(): File? {
             return null
         }
     }
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(Date())
     val mediaFile: File
     mediaFile = File(mediaStorageDir.path + File.separator + "IMG_" + timeStamp + ".jpg")
 

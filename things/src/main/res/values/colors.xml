@@ -4,4 +4,7 @@
   <color name="colorPrimaryDark">#303F9F</color>
   <color name="colorAccent">#FF4081</color>
   <color name="windowBackground">#000000</color>
+  <color name="countdownText">#ffffff</color>
+  <color name="progressPrimary">#bcbcbc</color>
+  <color name="progressSecondary">#3b3b3b</color>
 </resources>

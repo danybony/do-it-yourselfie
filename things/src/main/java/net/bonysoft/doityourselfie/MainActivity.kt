@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import android.widget.ImageView
+import android.view.View
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
@@ -17,10 +17,16 @@ import androidx.work.State
 import androidx.work.WorkManager
 import com.google.android.things.contrib.driver.button.Button
 import com.google.android.things.contrib.driver.button.ButtonInputDriver
+import com.google.android.things.contrib.driver.ht16k33.AlphanumericDisplay
 import com.google.android.things.contrib.driver.rainbowhat.RainbowHat
 import com.google.android.things.pio.Gpio
 import com.google.android.things.pio.PeripheralManager
 import com.orhanobut.hawk.Hawk
+import io.github.krtkush.lineartimer.LinearTimer
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import net.bonysoft.doityourselfie.camera.SelfieCamera
 import net.bonysoft.doityourselfie.camera.dumpFormatInfo
@@ -37,17 +43,19 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
 
     private lateinit var ledGpio: Gpio
     private lateinit var buttonInputDriver: ButtonInputDriver
+    private lateinit var display: AlphanumericDisplay
 
     private lateinit var camera: SelfieCamera
     private lateinit var cameraThread: HandlerThread
     private lateinit var cameraHandler: Handler
     private lateinit var picturesUploadQueue: PicturesUploadQueue
-    private lateinit var imageView: ImageView
+    private var hideImageJob: Job? = null
+
+    private var countdownRunning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        imageView = findViewById(R.id.image)
 
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
@@ -57,6 +65,11 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
             logicState,
             KeyEvent.KEYCODE_SPACE)
         buttonInputDriver.register()
+
+        display = RainbowHat.openDisplay().apply {
+            setBrightness(10)
+            setEnabled(true)
+        }
 
         picturesUploadQueue = PicturesUploadQueue(Room.databaseBuilder(applicationContext, QueueDatabase::class.java, "pictures_queue").build())
 
@@ -115,13 +128,46 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     }
 
     private fun startShootingProcess() {
-        camera.takePicture()
+        if (countdownRunning) {
+            return
+        }
+        countdownRunning = true
+
+        val timerDuration: Long = 3000
+        val linearTimer = LinearTimer.Builder()
+            .linearTimerView(progressCountdown)
+            .duration(timerDuration)
+            .timerListener(object : LinearTimer.TimerListener {
+                override fun onTimerReset() {
+                    // no-op
+                }
+
+                override fun animationComplete() {
+                    progressCountdown.hide()
+                    countdown.hide()
+                    countdownRunning = false
+                    camera.takePicture()
+                }
+
+                override fun timerTick(tickUpdateInMillis: Long) {
+                    countdown.text = (((timerDuration - tickUpdateInMillis) / 1000) + 1).toString()
+                }
+            })
+            .build()
+
+        hideImageJob?.cancel()
+        countdown.text = "3"
+        image.hide()
+        countdown.show()
+        progressCountdown.show()
+        linearTimer.startTimer()
     }
 
     override fun onStop() {
         buttonInputDriver.unregister()
         buttonInputDriver.close()
         ledGpio.close()
+        display.close()
         super.onStop()
     }
 
@@ -145,8 +191,12 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         }
 
         val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-        runOnUiThread {
-            imageView.setImageBitmap(bitmap)
+
+        hideImageJob = launch(UI) {
+            image.setImageBitmap(bitmap)
+            image.show()
+            delay(5000L)
+            image.hide()
         }
     }
 
@@ -187,12 +237,14 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
     }
 
     private fun display(text: String) {
-        with(RainbowHat.openDisplay()) {
-            setBrightness(10)
-            display(text)
-            setEnabled(true)
-            close()
-        }
+        display.display(text)
     }
+}
 
+private fun View.hide() {
+    visibility = View.GONE
+}
+
+private fun View.show() {
+    visibility = View.VISIBLE
 }
