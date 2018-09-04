@@ -1,7 +1,6 @@
 package net.bonysoft.doityourselfie.photos.di
 
 import android.app.Application
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import com.readystatesoftware.chuck.ChuckInterceptor
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -10,11 +9,10 @@ import net.bonysoft.doityourselfie.photos.BuildConfig
 import net.bonysoft.doityourselfie.photos.network.API_ENDPOINT
 import net.bonysoft.doityourselfie.photos.network.ApiService
 import net.bonysoft.doityourselfie.photos.network.UploadApiService
+import net.bonysoft.doityourselfie.photos.network.createRetrofit
 import net.bonysoft.doityourselfie.photos.utils.ImageTransformer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 
 @Module
@@ -49,19 +47,10 @@ internal class LibraryModule(private val application: Application,
     fun provideEndpoint() = API_ENDPOINT
 
     @Provides
-    fun provideRetrofit(moshi: Moshi,
-                        client: OkHttpClient,
-                        @Named("Endpoint") endpoint: String): Retrofit =
-            Retrofit.Builder()
-                    .addConverterFactory(MoshiConverterFactory.create(moshi))
-                    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                    .baseUrl(endpoint)
-                    .client(client)
-                    .build()
-
-    @Provides
-    fun provideApiService(retrofit: Retrofit): ApiService =
-            retrofit.create(ApiService::class.java)
+    fun provideApiService(moshi: Moshi,
+                          client: OkHttpClient,
+                          @Named("Endpoint") endpoint: String): ApiService =
+            createRetrofit(moshi, client, endpoint)
 
     @Provides
     fun provideImageTransformer(): ImageTransformer = ImageTransformer()

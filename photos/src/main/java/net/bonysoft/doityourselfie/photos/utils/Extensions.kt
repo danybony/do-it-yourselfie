@@ -8,3 +8,10 @@ internal fun String.toAlbumRequest() =
 internal fun String.asImageUploadRequestWith(albumId: String, description: String): ImageUploadRequest =
         ImageUploadRequest(albumId, arrayOf(
                 NewMediaItem(description, SimpleMediaItem(this))))
+
+internal fun String?.replaceWith(nextPageToken: String?): String? =
+        if (this != nextPageToken) {
+            nextPageToken
+        } else {
+            null
+        }
