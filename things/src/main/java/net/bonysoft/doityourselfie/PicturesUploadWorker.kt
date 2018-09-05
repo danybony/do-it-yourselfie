@@ -67,9 +67,11 @@ class PicturesUploadWorker : Worker() {
                     outputData = Data.Builder().putString(KEY_FAILURE_REASON, reason.name).build()
                     Timber.e(e)
                     allUploadsSuccessful = false
+                    break
                 } catch (e: Exception) {
                     Timber.e(e)
                     allUploadsSuccessful = false
+                    break
                 }
             }
         }
