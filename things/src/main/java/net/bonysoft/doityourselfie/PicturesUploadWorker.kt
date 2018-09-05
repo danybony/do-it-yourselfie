@@ -39,11 +39,14 @@ class PicturesUploadWorker : Worker() {
 
         Timber.d("Pictures to be uploaded: ${picturesToUpload.size}")
         runBlocking {
+            val albumId = photosAPI.fetchAlbums().await()
+                .first { it.title.contains(BuildConfig.ALBUM_KEYWORD, true) }
+                .id
             for (picture in picturesToUpload) {
                 Timber.d("Uploading ${picture.imageFile}")
                 try {
                     val bitmap = BitmapFactory.decodeFile(picture.imageFile)
-                    val results = photosAPI.uploadImage(BuildConfig.ALBUM_ID, picture.imageFile.extractName(), bitmap).await()
+                    val results = photosAPI.uploadImage(albumId, picture.imageFile.extractName(), bitmap).await()
                     val errors = results.newMediaItemResults.filter { it.status.code != 0 }
 
                     if (errors.isNotEmpty()) {
@@ -64,9 +67,11 @@ class PicturesUploadWorker : Worker() {
                     outputData = Data.Builder().putString(KEY_FAILURE_REASON, reason.name).build()
                     Timber.e(e)
                     allUploadsSuccessful = false
+                    break
                 } catch (e: Exception) {
                     Timber.e(e)
                     allUploadsSuccessful = false
+                    break
                 }
             }
         }

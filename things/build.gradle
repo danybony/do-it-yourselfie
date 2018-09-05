@@ -35,7 +35,7 @@ android {
         // These config flags are loaded from hardware.properties, if present
         buildConfigBoolean 'USE_RAINBOW_HAT', buildProperties.hardwareConfig['use_rainbow_hat'].or(false)
         buildConfigBoolean 'NC_BUTTON', buildProperties.hardwareConfig['nc_button'].or(false)
-        buildConfigString 'ALBUM_ID', buildProperties.hardwareConfig['album_id']
+        buildConfigString 'ALBUM_KEYWORD', buildProperties.hardwareConfig['album_keyword']
     }
 
     buildTypes {
