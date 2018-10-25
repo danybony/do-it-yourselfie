@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), TokenReceiver {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler(this))
         if (BuildConfig.DEBUG) dumpFormatInfo(this)
 
         val logicState = if (BuildConfig.NC_BUTTON) Button.LogicState.PRESSED_WHEN_HIGH else Button.LogicState.PRESSED_WHEN_LOW
